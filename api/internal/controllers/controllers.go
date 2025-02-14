@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -20,6 +19,8 @@ type Application struct {
 	commentCollection *mongo.Collection
 }
 
+const queryTimeout = 10 * time.Second
+
 func NewApplication(topicCollection, postCollection, commentCollection *mongo.Collection) *Application {
 	return &Application{
 		topicCollection:   topicCollection,
@@ -28,141 +29,143 @@ func NewApplication(topicCollection, postCollection, commentCollection *mongo.Co
 	}
 }
 
+func errorResponse(c echo.Context, status int, message string) error {
+	return c.JSON(status, map[string]string{"error": message})
+}
+
 func (app *Application) GetTopicList(c echo.Context) error {
-	var topiclist []models.Topic
-	var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
+	var ctx, cancel = context.WithTimeout(context.Background(), queryTimeout)
 	defer cancel()
+
+	var topiclist []models.Topic
 	cursor, err := app.topicCollection.Find(ctx, bson.M{})
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, "Someting Went Wrong Please Try After Some Time")
-	}
-	err = cursor.All(ctx, &topiclist)
-	if err != nil {
-		log.Println(err)
-		return c.JSON(http.StatusInternalServerError, "Error occurred while fetching topiclist")
+		log.Println("Error finding topics:", err)
+		return errorResponse(c, http.StatusInternalServerError, "Failed to fetch topics")
 	}
 	defer cursor.Close(ctx)
-	err = cursor.Err()
+	err = cursor.All(ctx, &topiclist)
 	if err != nil {
-		log.Println(err)
-		return c.JSON(http.StatusInternalServerError, "invalid")
+		log.Println("Error decoding topics:", err)
+		return errorResponse(c, http.StatusInternalServerError, "Failed to decode topics")
 	}
 	return c.JSON(http.StatusOK, topiclist)
 }
 
 func (app *Application) CreateTopic(c echo.Context) error {
-	var topic models.Topic
-	var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
+	var ctx, cancel = context.WithTimeout(context.Background(), queryTimeout)
 	defer cancel()
+
+	var topic models.Topic
 	if err := c.Bind(&topic); err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return errorResponse(c, http.StatusBadRequest, "Invalid request payload")
 	}
 	topic.ID = primitive.NewObjectID()
-	topic.Created_At, _ = time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
+	topic.Created_At = time.Now()
 	_, err := app.topicCollection.InsertOne(ctx, topic)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, "Not Created")
+		log.Println("Error inserting topic:", err)
+		return errorResponse(c, http.StatusInternalServerError, "Failed to create topic")
 	}
-	return c.JSON(http.StatusOK, "Successfully Created Topic")
+	return c.JSON(http.StatusCreated, map[string]string{"message": "Successfully created topic"})
 }
 
 func (app *Application) GetPostList(c echo.Context) error {
+	var ctx, cancel = context.WithTimeout(context.Background(), queryTimeout)
+	defer cancel()
+
 	var postlist []models.Post
 	topicID := c.Param("id")
-	var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
-	defer cancel()
 	objectID, err := primitive.ObjectIDFromHex(topicID)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, "Invalid Topic ID")
+		return errorResponse(c, http.StatusBadRequest, "Invalid Topic ID")
 	}
 	filter := bson.M{"topic_id": objectID}
 	cursor, err := app.postCollection.Find(ctx, filter)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, "Someting Went Wrong Please Try After Some Time")
-	}
-	err = cursor.All(ctx, &postlist)
-	if err != nil {
-		log.Println(err)
-		return c.JSON(http.StatusInternalServerError, "Error occurred while fetching postlist")
+		log.Println("Error finding posts:", err)
+		return errorResponse(c, http.StatusInternalServerError, "Failed to fetch posts")
 	}
 	defer cursor.Close(ctx)
-	err = cursor.Err()
+	err = cursor.All(ctx, &postlist)
 	if err != nil {
-		log.Println(err)
-		return c.JSON(http.StatusInternalServerError, "invalid")
+		log.Println("Error decoding posts:", err)
+		return errorResponse(c, http.StatusInternalServerError, "Failed to decode posts")
 	}
 	return c.JSON(http.StatusOK, postlist)
 }
 
 func (app *Application) CreatePost(c echo.Context) error {
+	var ctx, cancel = context.WithTimeout(context.Background(), queryTimeout)
+	defer cancel()
+
 	var post models.Post
 	topicID := c.Param("id")
-	fmt.Println("topicID", topicID)
-	var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
-	defer cancel()
 	if err := c.Bind(&post); err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return errorResponse(c, http.StatusBadRequest, "Invalid request payload")
 	}
 	objectID, err := primitive.ObjectIDFromHex(topicID)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, "Invalid Topic ID")
+		return errorResponse(c, http.StatusBadRequest, "Invalid Topic ID")
 	}
 	post.ID = primitive.NewObjectID()
 	post.Topic_ID = objectID
-	post.Created_At, _ = time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
+	post.Created_At = time.Now()
 	_, err = app.postCollection.InsertOne(ctx, post)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, "Not Created")
+		log.Println("Error inserting post:", err)
+		return errorResponse(c, http.StatusInternalServerError, "Failed to create post")
 	}
-	return c.JSON(http.StatusOK, "Successfully Created Post")
+	return c.JSON(http.StatusCreated, map[string]string{"message": "Successfully created post"})
 }
 
 func (app *Application) GetCommentList(c echo.Context) error {
+	var ctx, cancel = context.WithTimeout(context.Background(), queryTimeout)
+	defer cancel()
+
 	var commentlist []models.Comment
 	postID := c.Param("id")
-	var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
-	defer cancel()
 	objectID, err := primitive.ObjectIDFromHex(postID)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, "Invalid Post ID")
+		return errorResponse(c, http.StatusBadRequest, "Invalid Post ID")
 	}
 	filter := bson.M{"post_id": objectID}
 	cursor, err := app.commentCollection.Find(ctx, filter)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, "Someting Went Wrong Please Try After Some Time")
-	}
-	err = cursor.All(ctx, &commentlist)
-	if err != nil {
-		log.Println(err)
-		return c.JSON(http.StatusInternalServerError, "Error occurred while fetching commentlist")
+		log.Println("Error finding comments:", err)
+		return errorResponse(c, http.StatusInternalServerError, "Failed to fetch comments")
 	}
 	defer cursor.Close(ctx)
-	err = cursor.Err()
+	err = cursor.All(ctx, &commentlist)
 	if err != nil {
-		log.Println(err)
-		return c.JSON(http.StatusInternalServerError, "invalid")
+		log.Println("Error decoding comments:", err)
+		return errorResponse(c, http.StatusInternalServerError, "Failed to decode comments")
 	}
 	return c.JSON(http.StatusOK, commentlist)
 }
 
 func (app *Application) CreateComment(c echo.Context) error {
+	var ctx, cancel = context.WithTimeout(context.Background(), queryTimeout)
+	defer cancel()
+
 	var comment models.Comment
 	postID := c.Param("id")
-	var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
-	defer cancel()
 	if err := c.Bind(&comment); err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return errorResponse(c, http.StatusBadRequest, "Invalid request payload")
 	}
 	objectID, err := primitive.ObjectIDFromHex(postID)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, "Invalid Post ID")
+		return errorResponse(c, http.StatusBadRequest, "Invalid Post ID")
 	}
+
 	comment.ID = primitive.NewObjectID()
 	comment.Post_ID = objectID
-	comment.Created_At, _ = time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
+	comment.Created_At = time.Now()
+	
 	_, err = app.commentCollection.InsertOne(ctx, comment)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, "Not Created")
+		log.Println("Error inserting comment:", err)
+		return errorResponse(c, http.StatusInternalServerError, "Failed to create comment")
 	}
-	return c.JSON(http.StatusOK, "Successfully Created Comment")
+	return c.JSON(http.StatusCreated, map[string]string{"message": "Successfully created comment"})
 }
