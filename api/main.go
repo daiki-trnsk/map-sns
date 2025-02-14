@@ -32,12 +32,13 @@ func main() {
 
 	auth := e.Group("")
 	// トピック検索機能入れる、検索のエンドポイントは一覧取得と共通化する？
-	auth.GET("/topics", app.GetTopics)
+	// 検索、ソート、フィルタリング、ページング制御でレイヤー化できるかも
+	auth.GET("/topics", app.GetTopicList)
 	auth.POST("/topics", app.CreateTopic)
-	auth.GET("/topics/:id", app.GetPosts)
+	auth.GET("/topics/:id", app.GetPostList)
 	auth.POST("/topics/:id", app.CreatePost)
-	auth.GET("/posts/:id", app.GetPostContents)
-	auth.POST("/posts/:id/comments", app.CreateComment)
+	auth.GET("/posts/:id", app.GetCommentList)
+	auth.POST("/posts/:id", app.CreateComment)
 
 	log.Fatal(e.Start(":" + port))
 }

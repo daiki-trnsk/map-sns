@@ -1,6 +1,6 @@
 module github.com/daiki-trnsk/map-sns
 
-go 1.23.1
+go 1.20
 
 require (
 	github.com/labstack/echo/v4 v4.13.3

@@ -17,6 +17,7 @@ type Topic struct {
 	Topic_Title string             `bson:"topic_title" json:"topic_title"`
 	Description string             `bson:"description" json:"description"`
 	Created_At  time.Time          `bson:"created_at" json:"created_at"`
+	// post数取得すべきか
 }
 
 type Location struct {
