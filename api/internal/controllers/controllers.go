@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -71,6 +72,7 @@ func (app *Application) CreateTopic(c echo.Context) error {
 }
 
 func (app *Application) GetPostList(c echo.Context) error {
+	fmt.Println("called")
 	var ctx, cancel = context.WithTimeout(context.Background(), queryTimeout)
 	defer cancel()
 
@@ -92,6 +94,7 @@ func (app *Application) GetPostList(c echo.Context) error {
 		log.Println("Error decoding posts:", err)
 		return errorResponse(c, http.StatusInternalServerError, "Failed to decode posts")
 	}
+	fmt.Println("returned")
 	return c.JSON(http.StatusOK, postlist)
 }
 
