@@ -1,0 +1,21 @@
+.custom-div-icon {
+    background: transparent;
+    border: none;
+}
+.map-thumbnail {
+    text-align: center;
+    background: rgba(200, 0, 240, 0.521);
+    padding: 5px;
+    border-radius: 5px;
+}
+.map-thumbnail img {
+    display: block;
+    margin: auto;
+    border-radius: 5px;
+}
+.map-thumbnail p {
+    white-space: nowrap;
+    color: aliceblue;
+    font-size: 8px;
+    margin: 5px 0 0;
+}
