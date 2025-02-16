@@ -4,8 +4,8 @@ import (
 	"log"
 	"os"
 
+	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/echo/v4"
-
 	"github.com/daiki-trnsk/map-sns/internal/controllers"
 	// "github.com/daiki-trnsk/map-sns/internal/routes"
 	"github.com/daiki-trnsk/map-sns/pkg/config"
@@ -29,6 +29,13 @@ func main() {
 	)
 
 	e := echo.New()
+	e.Use(middleware.Logger())
+	e.Use(middleware.Recover())
+
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+        AllowOrigins: []string{"*"},
+		AllowMethods: []string{echo.GET, echo.POST, echo.PUT, echo.DELETE, echo.HEAD},
+    }))
 
 	auth := e.Group("")
 	// トピック検索機能入れる、検索のエンドポイントは一覧取得と共通化する？
