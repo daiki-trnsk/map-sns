@@ -14,6 +14,6 @@ export default function Home() {
   }, []);
 
   return (
-    <TopicList topics={topics}/>
+    <TopicList topics={topics} setTopics={setTopics}/>
   );
 }
