@@ -37,7 +37,7 @@ func main() {
 		AllowMethods: []string{echo.GET, echo.POST, echo.PUT, echo.DELETE, echo.HEAD},
     }))
 
-	e.GET("/", func(c echo.Context) error {
+	e.Any("/", func(c echo.Context) error {
 		return c.String(200, "Map SNS API is running")
 	})
 
