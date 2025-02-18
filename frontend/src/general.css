@@ -9,6 +9,9 @@
     border-radius: 5px;
 }
 .map-thumbnail img {
+    width: 50px !important; 
+    height: 50px !important;
+    object-fit: cover !important;
     display: block;
     margin: auto;
     border-radius: 5px;
