@@ -1,8 +1,9 @@
 import { useState, useRef } from "react";
 import supabase from "../supabaseClient";
 import { v4 as uuidv4 } from "uuid";
+import {API_HOST} from "../common";
 
-export default function PostForm({ id, lat, lng, onAddPost }) {
+export default function PostForm({ id, lat, lng, onAddPost, setShowForm, setSelectedPosition}) {
   const [post_title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [image, setImage] = useState(null);
@@ -22,8 +23,8 @@ export default function PostForm({ id, lat, lng, onAddPost }) {
     if (!image) return null;
 
     setUploading(true);
-
-    const uniqueFileName = `${uuidv4()}_${image.name}`;
+    const fileExtension = image.name.split(".").pop(); 
+    const uniqueFileName = `${uuidv4()}.${fileExtension}`;
     const filePath = `uploads/${uniqueFileName}`;
 
     const { error } = await supabase.storage
@@ -47,7 +48,6 @@ export default function PostForm({ id, lat, lng, onAddPost }) {
     e.preventDefault();
 
     const imageUrl = await handleUpload();
-    console.log("imagerurl", imageUrl);
 
     const newPost = {
       post_title,
@@ -56,7 +56,7 @@ export default function PostForm({ id, lat, lng, onAddPost }) {
       location: { lat: lat, lng: lng },
     };
 
-    fetch(`http://localhost:8000/topics/${id}`, {
+    fetch(`${API_HOST}/topics/${id}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -70,6 +70,8 @@ export default function PostForm({ id, lat, lng, onAddPost }) {
         setDescription("");
         setImage(null);
         setPreview(null);
+        setShowForm(false);
+        setSelectedPosition(null); 
         if (fileInputRef.current) {
           fileInputRef.current.value = "";
         }
