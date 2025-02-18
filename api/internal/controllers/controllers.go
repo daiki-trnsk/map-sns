@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	// "strconv"
 	"time"
 
 	"github.com/daiki-trnsk/map-sns/internal/models"
@@ -107,6 +108,7 @@ func (app *Application) CreatePost(c echo.Context) error {
 	if err := c.Bind(&post); err != nil {
 		return errorResponse(c, http.StatusBadRequest, "Invalid request payload")
 	}
+	fmt.Println("value of post", post)
 	objectID, err := primitive.ObjectIDFromHex(topicID)
 	if err != nil {
 		return errorResponse(c, http.StatusBadRequest, "Invalid Topic ID")
@@ -119,7 +121,7 @@ func (app *Application) CreatePost(c echo.Context) error {
 		log.Println("Error inserting post:", err)
 		return errorResponse(c, http.StatusInternalServerError, "Failed to create post")
 	}
-	return c.JSON(http.StatusCreated, map[string]string{"message": "Successfully created post"})
+	return c.JSON(http.StatusCreated, post)
 }
 
 func (app *Application) GetCommentList(c echo.Context) error {
