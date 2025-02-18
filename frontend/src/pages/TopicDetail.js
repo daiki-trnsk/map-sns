@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import Map from "../components/Map";
 
 export default function TopicDetail() {
-  const { id } = useParams();  // URL からトピックIDを取得
+  const { id } = useParams();
   const [posts, setPosts] = useState([]);
 
   useEffect(() => {
@@ -13,10 +13,13 @@ export default function TopicDetail() {
       .catch((err) => console.error("Error:", err));
   }, [id]);
 
+  const handleAddPost = (newPost) => {
+    setPosts((prevPosts) => [...(prevPosts || []), newPost]);
+  };
+
   return (
     <div>
-      <h1>トピック詳細</h1>
-      <Map posts={posts} />
+      <Map posts={posts} onAddPost={handleAddPost} id={id} />
     </div>
   );
 }
