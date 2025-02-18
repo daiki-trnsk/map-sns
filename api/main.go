@@ -37,6 +37,10 @@ func main() {
 		AllowMethods: []string{echo.GET, echo.POST, echo.PUT, echo.DELETE, echo.HEAD},
     }))
 
+	e.GET("/", func(c echo.Context) error {
+		return c.String(200, "Map SNS API is running")
+	})
+
 	auth := e.Group("")
 	// トピック検索機能入れる、検索のエンドポイントは一覧取得と共通化する？
 	// 検索、ソート、フィルタリング、ページング制御でレイヤー化できるかも
