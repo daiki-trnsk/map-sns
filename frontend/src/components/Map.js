@@ -21,7 +21,7 @@ export default function Map({ posts, onAddPost, id }) {
         setShowForm(true);
       },
     });
-    return null; 
+    return null;
   }
   return (
     <MapContainer
@@ -78,6 +78,8 @@ export default function Map({ posts, onAddPost, id }) {
               lat={selectedPosition.lat}
               lng={selectedPosition.lng}
               onAddPost={onAddPost}
+              setShowForm={setShowForm}
+              setSelectedPosition={setSelectedPosition}
             />
           </Popup>
         </Marker>
