@@ -3,7 +3,7 @@ import supabase from "../supabaseClient";
 import { v4 as uuidv4 } from "uuid";
 import {API_HOST} from "../common";
 
-export default function PostForm({ id, lat, lng, onAddPost, setShowForm, setSelectedPosition}) {
+export default function PostForm({ id, lat, lng, onAddPost, setSelectedPosition}) {
   const [post_title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [image, setImage] = useState(null);
@@ -70,7 +70,6 @@ export default function PostForm({ id, lat, lng, onAddPost, setShowForm, setSele
         setDescription("");
         setImage(null);
         setPreview(null);
-        setShowForm(false);
         setSelectedPosition(null); 
         if (fileInputRef.current) {
           fileInputRef.current.value = "";

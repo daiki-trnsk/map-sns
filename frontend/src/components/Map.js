@@ -7,22 +7,24 @@ import {
 } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
-import { useState, useParams } from "react";
+import { useState } from "react";
 import "../general.css";
 import PostForm from "./PostForm";
+import Comment from "./Comment";
+import DefaultIcon from "./PostMarker";
 
 export default function Map({ posts, onAddPost, id }) {
   const [selectedPosition, setSelectedPosition] = useState(null);
-  const [showForm, setShowForm] = useState(false);
+
   function MapClickHandler() {
     useMapEvent({
       click(e) {
-        setSelectedPosition(e.latlng);
-        setShowForm(true);
+        setSelectedPosition(prevPosition => prevPosition ? null : e.latlng);
       },
     });
     return null;
   }
+
   return (
     <MapContainer
       center={[35.66572, 139.731]}
@@ -52,16 +54,13 @@ export default function Map({ posts, onAddPost, id }) {
               position={[post.location.lat, post.location.lng]}
               icon={htmlIcon}
             >
-              <Popup offset={[0, -50]}>
+              <Popup offset={[0, -50]} className="post-detail-popup">
                 <b>{post.post_title}</b>
                 <br />
-                <img
-                  src={post.imageUrl}
-                  width="100px"
-                  height="100px"
-                />
+                <img src={post.imageUrl}/>
                 <br />
                 <p>{post.description}</p>
+                <Comment id={post.id} />
               </Popup>
             </Marker>
           );
@@ -70,15 +69,22 @@ export default function Map({ posts, onAddPost, id }) {
         <p style={{ textAlign: "center", color: "#888" }}>投稿がありません</p>
       )}
 
-      {selectedPosition && showForm && (
-        <Marker position={[selectedPosition.lat, selectedPosition.lng]}>
-          <Popup autoOpen={true}>
+      {selectedPosition && (
+        <Marker
+          position={[selectedPosition.lat, selectedPosition.lng]}
+          icon={DefaultIcon}
+          eventHandlers={{
+            add: (e) => {
+              e.target.openPopup();
+            }
+          }}
+        >
+          <Popup className="post-form-popup">
             <PostForm
               id={id}
               lat={selectedPosition.lat}
               lng={selectedPosition.lng}
               onAddPost={onAddPost}
-              setShowForm={setShowForm}
               setSelectedPosition={setSelectedPosition}
             />
           </Popup>
