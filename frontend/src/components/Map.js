@@ -19,7 +19,7 @@ export default function Map({ posts, onAddPost, id }) {
   function MapClickHandler() {
     useMapEvent({
       click(e) {
-        setSelectedPosition(prevPosition => prevPosition ? null : e.latlng);
+        setSelectedPosition((prevPosition) => (prevPosition ? null : e.latlng));
       },
     });
     return null;
@@ -55,12 +55,18 @@ export default function Map({ posts, onAddPost, id }) {
               icon={htmlIcon}
             >
               <Popup offset={[0, -50]} className="post-detail-popup">
-                <b>{post.post_title}</b>
-                <br />
-                <img src={post.imageUrl}/>
-                <br />
-                <p>{post.description}</p>
-                <Comment id={post.id} />
+                <div className="popup-content">
+                  <h3 className="popup-title">{post.post_title}</h3>
+                  <div className="popup-body">
+                    <img src={post.imageUrl} className="popup-image" />
+                    <div className="popup-text">
+                      <div className="description">
+                        <p>{post.description}</p>
+                      </div>
+                      <Comment id={post.id} />
+                    </div>
+                  </div>
+                </div>
               </Popup>
             </Marker>
           );
@@ -76,7 +82,7 @@ export default function Map({ posts, onAddPost, id }) {
           eventHandlers={{
             add: (e) => {
               e.target.openPopup();
-            }
+            },
           }}
         >
           <Popup className="post-form-popup">
