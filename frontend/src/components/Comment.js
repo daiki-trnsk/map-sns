@@ -51,7 +51,6 @@ export default function Comment({ id }) {
 
       setComment("");
 
-      // 新しいコメントが追加された後にスクロール位置を一番上に設定
       if (commentBoxRef.current) {
         commentBoxRef.current.scrollTop = 0;
       }
