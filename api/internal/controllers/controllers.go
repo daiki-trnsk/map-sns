@@ -69,7 +69,7 @@ func (app *Application) CreateTopic(c echo.Context) error {
 		log.Println("Error inserting topic:", err)
 		return errorResponse(c, http.StatusInternalServerError, "Failed to create topic")
 	}
-	return c.JSON(http.StatusCreated, map[string]string{"message": "Successfully created topic"})
+	return c.JSON(http.StatusCreated, topic)
 }
 
 func (app *Application) GetPostList(c echo.Context) error {
@@ -172,5 +172,5 @@ func (app *Application) CreateComment(c echo.Context) error {
 		log.Println("Error inserting comment:", err)
 		return errorResponse(c, http.StatusInternalServerError, "Failed to create comment")
 	}
-	return c.JSON(http.StatusCreated, map[string]string{"message": "Successfully created comment"})
+	return c.JSON(http.StatusCreated, comment)
 }
