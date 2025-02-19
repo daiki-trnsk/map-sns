@@ -2,23 +2,115 @@
     background: transparent;
     border: none;
 }
+
 .map-thumbnail {
     text-align: center;
     background: rgba(200, 0, 240, 0.521);
     padding: 5px;
     border-radius: 5px;
 }
+
 .map-thumbnail img {
-    width: 50px !important; 
+    width: 50px !important;
     height: 50px !important;
     object-fit: cover !important;
     display: block;
     margin: auto;
     border-radius: 5px;
 }
+
 .map-thumbnail p {
     white-space: nowrap;
     color: aliceblue;
     font-size: 8px;
     margin: 5px 0 0;
+}
+
+.post-detail-popup .leaflet-popup-content-wrapper {
+    width: 350px;
+}
+
+.post-detail-popup img {
+    width: 300px;
+    max-height: 300px;
+}
+
+.post-form-popup .leaflet-popup-content-wrapper {}
+
+.comment-container {
+    width: 100%;
+    /* margin: 0 auto;
+    padding: 10px;
+    border-radius: 8px; */
+}
+
+.comment-container h4 {
+    margin-bottom: 0;
+}
+
+/* 🔹 スクロール可能なコメントボックス */
+.comment-box {
+    max-height: 100px;
+    overflow-y: auto;
+    padding: 0px 10px;
+    background: white;
+    border-radius: 5px;
+    /* border: 1px solid #ddd; */
+    display: flex;
+    flex-direction: column;
+}
+
+.no-comment {
+    color: #999;
+    text-align: center;
+    padding: 0px 10px;
+}
+
+.comment-box::-webkit-scrollbar {
+    background: #ececec;
+    width: 6px;
+    height: 15px;
+    border-radius: 20px;
+}
+
+.comment-box::-webkit-scrollbar-thumb {
+    background-color: rgb(165, 164, 164);
+    border-radius: 20px;
+}
+
+.comment-box hr {
+    border: none;
+    height: 1px;
+    background-color: #e0e0e0;
+}
+
+.comment-box p {
+    margin: 0;
+}
+
+/* 🔹 コメント入力フォーム */
+.comment-form {
+    display: flex;
+    gap: 5px;
+    margin-top: 10px;
+}
+
+.comment-form input {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.comment-form button {
+    padding: 8px 12px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.comment-form button:hover {
+    background-color: #0056b3;
 }
