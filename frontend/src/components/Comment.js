@@ -81,6 +81,7 @@ export default function Comment({ id }) {
           value={comment}
           onChange={(e) => setComment(e.target.value)}
           placeholder="コメントを入力"
+          maxLength={500}
           required
         />
         <button type="submit">➤</button>
