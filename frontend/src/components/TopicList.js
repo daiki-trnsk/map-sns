@@ -1,14 +1,31 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import {API_HOST} from "../common";
+import { API_HOST } from "../common";
 
-export default function TopicList({ topics, setTopics }) {
+export default function TopicList() {
+  const [topics, setTopics] = useState([]);
+  const [searchValue, setSearchValue] = useState("");
   const [topicTitle, setTopicTitle] = useState("");
   const [description, setDescription] = useState("");
-  
+
+  const fetchTopics = async () => {
+    try {
+      const query = searchValue ? `${encodeURIComponent(searchValue)}` : "";
+      const res = await fetch(`${API_HOST}/topics?title=${query}`);
+      const data = await res.json();
+      setTopics(data);
+    } catch (err) {
+      console.error("Error:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchTopics();
+  }, [searchValue]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!topicTitle.trim() || !description.trim()) {
       alert("タイトルと説明を入力してください！");
       return;
@@ -20,7 +37,6 @@ export default function TopicList({ topics, setTopics }) {
     };
 
     try {
-      console.log("apihost", API_HOST)
       const res = await fetch(`${API_HOST}/topics`, {
         method: "POST",
         headers: {
@@ -34,9 +50,7 @@ export default function TopicList({ topics, setTopics }) {
       }
 
       const data = await res.json();
-      
       setTopics((prevTopics) => [...prevTopics, data]);
-
       setTopicTitle("");
       setDescription("");
     } catch (error) {
@@ -45,10 +59,15 @@ export default function TopicList({ topics, setTopics }) {
     }
   };
 
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    setSearchValue(e.target.elements[0].value);
+  };
+
   return (
-    <div>
+    <div className="topic-list">
       <h1>トピック一覧</h1>
-      <form onSubmit={handleSubmit} style={{ marginBottom: "20px" }}>
+      <form onSubmit={handleSubmit} className="topic-form">
         <input
           type="text"
           value={topicTitle}
@@ -65,10 +84,16 @@ export default function TopicList({ topics, setTopics }) {
         />
         <button type="submit">追加</button>
       </form>
+      <form onSubmit={handleSearchSubmit} className="search-form">
+        <input type="text" placeholder="キーワード" />
+        <button type="submit">検索</button>
+      </form>
 
       {(topics ?? []).map((topic) => (
-        <div key={topic.id}>
-          <Link to={`/topic/${topic.id}`}>{topic.topic_title}</Link>
+        <div key={topic.id} className="topic-item">
+          <Link to={`/topic/${topic.id}`} className="topic-title">
+            {topic.topic_title}
+          </Link>
           <p>{topic.description}</p>
         </div>
       ))}

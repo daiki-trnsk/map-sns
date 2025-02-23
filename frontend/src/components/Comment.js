@@ -45,7 +45,6 @@ export default function Comment({ id }) {
       }
 
       const data = await res.json();
-      console.log("cm data", data);
 
       setCommentList((prevCommentList) => [...prevCommentList, data]);
 
