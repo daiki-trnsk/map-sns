@@ -1,256 +1,327 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat+Subrayada:wght@400;700&display=swap');
+
 /* トピック全体 */
 .topic-list {
-    font-family: 'Arial', sans-serif;
-    max-width: 800px;
-    margin: 40px auto;
-    padding: 20px;
-    background: #f9f9f9;
-    border-radius: 12px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  /* 見出し */
-  .topic-list h1 {
-    font-size: 2rem;
-    color: #333;
-    border-bottom: 2px solid #4CAF50;
-    padding-bottom: 8px;
-    margin-bottom: 20px;
-    text-align: center;
-  }
-  
-  /* フォーム全体 */
-  .topic-form, .search-form {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
-    align-items: center;
-  }
-  
-  /* 入力フォーム */
-  input[type="text"] {
-    padding: 10px;
-    font-size: 1rem;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    flex: 1;
-    transition: border-color 0.3s;
-  }
-  
-  input[type="text"]:focus {
-    border-color: #4CAF50;
-    outline: none;
-  }
-  
-  /* ボタン */
-  button {
-    padding: 10px 15px;
-    background: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: background 0.3s;
-  }
-  
-  button:hover {
-    background: #45a049;
-  }
-  
-  /* トピックアイテム */
-  .topic-items {
-    margin-top: 20px;
-  }
-  
-  .topic-item {
-    padding: 15px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    background: white;
-    margin-bottom: 10px;
-    transition: box-shadow 0.3s;
-  }
-  
-  .topic-item:hover {
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  }
-  
-  /* リンク */
-  .topic-title {
-    font-size: 1.2rem;
-    color: #4CAF50;
-    font-weight: bold;
-    text-decoration: none;
-    display: block;
-    margin-bottom: 5px;
-  }
-  
-  .topic-title:hover {
-    text-decoration: underline;
-  }
-  
-  /* 説明文 */
-  .topic-description {
-    color: #555;
-    font-size: 0.9rem;
-  }
-  
+  font-family: 'Arial', sans-serif;
+  max-width: 800px;
+  margin: 0px auto;
+  padding: 20px;
+  padding-top: 100px;
+  border-radius: 12px;
+}
+
+/* 見出し */
+.topic-list h1 {
+  font-size: 2rem;
+  color: #333;
+  border-bottom: 2px solid #f703ff;
+  padding-bottom: 8px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* フォーム全体 */
+.topic-form,
+.search-form {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.topic-form {
+  padding: 20px;
+  flex-direction: column;
+  background-color: #eeeeee;
+  border-radius: 8px;
+}
+
+.topic-form input {
+  width: 70%;
+  height: 3.5em;
+}
+
+.search-form {
+  margin: 30px;
+}
+
+/* メディアクエリでモバイル対応
+  @media (max-width: 600px) {
+    .topic-form {
+      flex-direction: column;
+    }
+  } */
+
+/* 入力フォーム */
+input[type="text"] {
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  flex: 1;
+  transition: border-color 0.3s;
+}
+
+input[type="text"]:focus {
+  border-color: #f703ff;
+  outline: none;
+}
+
+/* ボタン */
+button {
+  padding: 10px 15px;
+  background: #f703ff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.3s;
+}
+
+button:hover {
+  background: #f703ff;
+}
+
+/* トピックアイテム */
+.topic-items {
+  margin-top: 20px;
+}
+
+.topic-item {
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: white;
+  margin-bottom: 10px;
+  transition-duration: .1s;
+}
+
+.topic-item:hover {
+  transform: scale(1.03);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.topic-item p {
+  font-size: medium;
+  font-weight: lighter;
+}
+
+/* リンク */
+.topic-title {
+  font-size: 1.2rem;
+  /* color: #bf00c5; */
+  color: black;
+  font-weight: bold;
+  text-decoration: none;
+  display: block;
+  margin-bottom: 5px;
+}
+
+/* 説明文 */
+.topic-description {
+  color: #555;
+  font-size: 0.9rem;
+}
+
 
 .custom-div-icon {
-    background: transparent;
-    border: none;
+  background: transparent;
+  border: none;
 }
 
 .map-thumbnail {
-    text-align: center;
-    background: rgba(200, 0, 240, 0.425);
-    padding: 5px;
-    border-radius: 5px;
+  text-align: center;
+  background: rgba(200, 0, 240, 0.425);
+  padding: 5px;
+  border-radius: 5px;
 }
 
 .map-thumbnail img {
-    width: 50px !important;
-    height: 50px !important;
-    object-fit: cover !important;
-    display: block;
-    margin: auto;
-    border-radius: 5px;
+  width: 50px !important;
+  height: 50px !important;
+  object-fit: cover !important;
+  display: block;
+  margin: auto;
+  border-radius: 5px;
 }
 
 .map-thumbnail p {
-    white-space: nowrap;
-    color: aliceblue;
-    font-size: 8px;
-    margin: 5px 0 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  white-space: nowrap;
+  color: aliceblue;
+  font-size: 8px;
+  margin: 5px 0 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .post-detail-popup .leaflet-popup-content-wrapper {
-    width: 600px;
+  width: 600px;
 }
 
 .post-detail-popup .leaflet-popup-content {
-    width: auto !important;
-    margin-bottom: 10px;
+  width: auto !important;
+  margin-bottom: 10px;
 }
 
 .post-form-popup .leaflet-popup-content-wrapper {}
 
 .description {
-    max-height: 120px;
-    overflow-y: auto;
+  max-height: 120px;
+  overflow-y: auto;
 }
 
 .description p {
-    margin: 0;
+  margin: 0;
 }
 
 .comment-container {
-    width: 100%;
-    /* margin: 0 auto;
+  width: 100%;
+  /* margin: 0 auto;
     padding: 10px;
     border-radius: 8px; */
 }
 
 .comment-container h4 {
-    padding: 5px;
-    margin-bottom: 10px;
+  padding: 5px;
+  margin-bottom: 10px;
 }
 
 .comment-box {
-    height: 100px;
-    overflow-y: auto;
-    padding: 0px 10px;
-    background: white;
-    border-radius: 5px;
-    /* border: 1px solid #ddd; */
-    display: flex;
-    flex-direction: column;
+  height: 100px;
+  overflow-y: auto;
+  padding: 0px 10px;
+  background: white;
+  border-radius: 5px;
+  /* border: 1px solid #ddd; */
+  display: flex;
+  flex-direction: column;
 }
 
 .no-comment {
-    color: #999;
-    text-align: center;
-    padding: 30px 10px;
+  color: #999;
+  text-align: center;
+  padding: 30px 10px;
 }
 
-.description::-webkit-scrollbar, 
+.description::-webkit-scrollbar,
 .comment-box::-webkit-scrollbar {
-    background: #ececec;
-    width: 6px;
-    height: 15px;
-    border-radius: 20px;
+  background: #ececec;
+  width: 6px;
+  height: 15px;
+  border-radius: 20px;
 }
 
 .description::-webkit-scrollbar-thumb,
 .comment-box::-webkit-scrollbar-thumb {
-    background-color: rgb(165, 164, 164);
-    border-radius: 20px;
+  background-color: rgb(165, 164, 164);
+  border-radius: 20px;
 }
 
 .comment-box hr {
-    border: none;
-    height: 1px;
-    background-color: #e0e0e0;
+  border: none;
+  height: 1px;
+  background-color: #e0e0e0;
 }
 
 .comment-box p {
-    margin: 0;
+  margin: 0;
 }
 
 .comment-form {
-    display: flex;
-    gap: 5px;
-    margin-top: 10px;
+  display: flex;
+  gap: 5px;
+  margin-top: 10px;
 }
 
 .comment-form input {
-    flex: 1;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
 }
 
 .comment-form button {
-    padding: 8px 12px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
+  padding: 8px 12px;
+  background-color: #f703ff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
 .comment-form button:hover {
-    background-color: #0056b3;
+  background-color: #a804ad;
 }
 
 .popup-content {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 .popup-title {
-    margin-bottom: 10px;
+  margin-bottom: 10px;
 }
 
 .popup-body {
-    display: flex;
+  display: flex;
 }
 
 .popup-image {
-    object-fit: cover;
-    width: 300px;
-    height: 300px;
-    flex-shrink: 0;
-    margin-right: 10px;
+  object-fit: cover;
+  width: 300px;
+  height: 300px;
+  flex-shrink: 0;
+  margin-right: 10px;
 }
 
 .popup-text {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+details summary {
+  cursor: pointer;
+  font-weight: bold;
+  list-style: none;
+  position: relative;
+  padding-left: 20px;
+}
+
+details summary::before {
+  content: "✚";
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+details[open] summary::before {
+  content: "▲";
+}
+
+.full-view {
+  position: relative;
+}
+
+.app-title {
+  color: #f703ff;
+  font-family: 'Montserrat Subrayada', sans-serif;
+  left: 50%;
+  transform: translateX(-50%);
+  align-items: center;
+  position: absolute;
+  font-size: 3rem;
+  font-weight: bold;
+  z-index: 9999999;
+  /* text-shadow:
+    0 0 0.05em #004eff,
+    0 0 0.10em #004eff,
+    0 0 0.15em #004eff,
+    0 0 0.30em #004eff; */
+  filter: saturate(80%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-box-reflect: below -28px -webkit-gradient(linear, left bottom, left top, from(rgba(255, 255, 255, .6)), to(transparent));
 }

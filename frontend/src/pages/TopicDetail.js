@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import Map from "../components/Map";
 import { API_HOST } from "../common";
@@ -19,9 +19,11 @@ export default function TopicDetail() {
   };
 
   return (
-    <div>
+    <div className="full-view">
+      <Link to={"/"}>
+        <div className="app-title">Mapost</div>
+      </Link>
       <Map posts={posts} onAddPost={handleAddPost} id={id} />
     </div>
   );
 }
-
