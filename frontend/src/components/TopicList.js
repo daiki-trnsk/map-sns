@@ -66,36 +66,38 @@ export default function TopicList() {
 
   return (
     <div className="topic-list">
-      <h1>トピック一覧</h1>
-      <form onSubmit={handleSubmit} className="topic-form">
-        <input
-          type="text"
-          value={topicTitle}
-          onChange={(e) => setTopicTitle(e.target.value)}
-          placeholder="トピックのタイトル"
-          required
-        />
-        <input
-          type="text"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          placeholder="トピックの説明"
-          required
-        />
-        <button type="submit">追加</button>
-      </form>
+      <details>
+        <summary>トピックを追加する</summary>
+        <form onSubmit={handleSubmit} className="topic-form">
+          <input
+            type="text"
+            value={topicTitle}
+            onChange={(e) => setTopicTitle(e.target.value)}
+            placeholder="トピックのタイトル"
+            required
+          />
+          <input
+            type="text"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="トピックの説明"
+            required
+          />
+          <button type="submit">追加</button>
+        </form>
+      </details>
       <form onSubmit={handleSearchSubmit} className="search-form">
         <input type="text" placeholder="キーワード" />
         <button type="submit">検索</button>
       </form>
 
       {(topics ?? []).map((topic) => (
-        <div key={topic.id} className="topic-item">
-          <Link to={`/topic/${topic.id}`} className="topic-title">
+        <Link to={`/topic/${topic.id}`} className="topic-title">
+          <div key={topic.id} className="topic-item">
             {topic.topic_title}
-          </Link>
-          <p>{topic.description}</p>
-        </div>
+            <p>{topic.description}</p>
+          </div>
+        </Link>
       ))}
     </div>
   );
