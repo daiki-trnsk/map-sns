@@ -152,6 +152,7 @@ export default function PostForm({
         value={post_title}
         onChange={(e) => setTitle(e.target.value)}
         placeholder="タイトル"
+        maxLength={500}
         required
         style={{
           width: "100%",
@@ -166,6 +167,7 @@ export default function PostForm({
         onChange={(e) => setDescription(e.target.value)}
         placeholder="説明"
         required
+        maxLength={500}
         style={{
           width: "100%",
           padding: "10px",

@@ -74,6 +74,7 @@ export default function TopicList() {
             value={topicTitle}
             onChange={(e) => setTopicTitle(e.target.value)}
             placeholder="トピックのタイトル"
+            maxLength={500}
             required
           />
           <input
@@ -81,6 +82,7 @@ export default function TopicList() {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="トピックの説明"
+            maxLength={500}
             required
           />
           <button type="submit">追加</button>
