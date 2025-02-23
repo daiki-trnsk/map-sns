@@ -40,7 +40,12 @@ func (app *Application) GetTopicList(c echo.Context) error {
 	defer cancel()
 
 	var topiclist []models.Topic
-	cursor, err := app.topicCollection.Find(ctx, bson.M{})
+	queryParam := c.QueryParam("title")
+	filter := bson.M{}
+	if queryParam != "" {
+		filter = bson.M{"topic_title": bson.M{"$regex": queryParam, "$options": "i"}}
+	}
+	cursor, err := app.topicCollection.Find(ctx, filter)
 	if err != nil {
 		log.Println("Error finding topics:", err)
 		return errorResponse(c, http.StatusInternalServerError, "Failed to fetch topics")
