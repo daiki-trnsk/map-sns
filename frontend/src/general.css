@@ -1,6 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat+Subrayada:wght@400;700&display=swap');
 
-/* トピック全体 */
 .topic-list {
   font-family: 'Arial', sans-serif;
   max-width: 800px;
@@ -10,7 +9,6 @@
   border-radius: 12px;
 }
 
-/* 見出し */
 .topic-list h1 {
   font-size: 2rem;
   color: #333;
@@ -20,7 +18,6 @@
   text-align: center;
 }
 
-/* フォーム全体 */
 .topic-form,
 .search-form {
   display: flex;
@@ -44,14 +41,6 @@
   margin: 30px;
 }
 
-/* メディアクエリでモバイル対応
-  @media (max-width: 600px) {
-    .topic-form {
-      flex-direction: column;
-    }
-  } */
-
-/* 入力フォーム */
 input[type="text"] {
   padding: 10px;
   font-size: 1rem;
@@ -66,7 +55,6 @@ input[type="text"]:focus {
   outline: none;
 }
 
-/* ボタン */
 button {
   padding: 10px 15px;
   background: #f703ff;
@@ -82,7 +70,6 @@ button:hover {
   background: #f703ff;
 }
 
-/* トピックアイテム */
 .topic-items {
   margin-top: 20px;
 }
@@ -106,7 +93,6 @@ button:hover {
   font-weight: lighter;
 }
 
-/* リンク */
 .topic-title {
   font-size: 1.2rem;
   /* color: #bf00c5; */
@@ -117,7 +103,6 @@ button:hover {
   margin-bottom: 5px;
 }
 
-/* 説明文 */
 .topic-description {
   color: #555;
   font-size: 0.9rem;
@@ -311,15 +296,10 @@ details[open] summary::before {
   left: 50%;
   transform: translateX(-50%);
   align-items: center;
-  position: absolute;
+  position: fixed;
   font-size: 3rem;
   font-weight: bold;
-  z-index: 9999999;
-  /* text-shadow:
-    0 0 0.05em #004eff,
-    0 0 0.10em #004eff,
-    0 0 0.15em #004eff,
-    0 0 0.30em #004eff; */
+  z-index: 500;
   filter: saturate(80%);
   -webkit-background-clip: text;
   background-clip: text;
