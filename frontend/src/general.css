@@ -273,6 +273,11 @@ details summary {
   list-style: none;
   position: relative;
   padding-left: 20px;
+  user-select: none;
+}
+
+details summary::-webkit-details-marker {
+  display: none;
 }
 
 details summary::before {

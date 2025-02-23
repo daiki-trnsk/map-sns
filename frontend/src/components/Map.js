@@ -29,6 +29,7 @@ export default function Map({ posts, onAddPost, id }) {
     <MapContainer
       center={[37, 138]}
       zoom={6}
+      zoomControl={false}
       style={{ height: "100vh", width: "100%" }}
     >
       <TileLayer url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png" />
