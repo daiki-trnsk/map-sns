@@ -21,7 +21,7 @@ export default function TopicDetail() {
   return (
     <div className="full-view">
       <Link to={"/"}>
-        <div className="app-title">Mapost</div>
+        <div className="app-title">MAPOST</div>
       </Link>
       <Map posts={posts} onAddPost={handleAddPost} id={id} />
     </div>

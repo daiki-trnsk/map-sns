@@ -116,7 +116,7 @@ button:hover {
 
 .map-thumbnail {
   text-align: center;
-  background: rgba(200, 0, 240, 0.425);
+  background: rgb(222, 54, 255);
   padding: 5px;
   border-radius: 5px;
 }
