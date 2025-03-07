@@ -6,7 +6,9 @@ import (
 
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/echo/v4"
+
 	"github.com/daiki-trnsk/map-sns/internal/controllers"
+	customMiddleware "github.com/daiki-trnsk/map-sns/internal/middleware"
 	// "github.com/daiki-trnsk/map-sns/internal/routes"
 	"github.com/daiki-trnsk/map-sns/pkg/config"
 	"github.com/daiki-trnsk/map-sns/pkg/database"
@@ -41,15 +43,32 @@ func main() {
 		return c.String(200, "Map SNS API is running")
 	})
 
+	e.POST("/signup", controllers.SignUp)
+	e.POST("/login", controllers.Login)
+	
+	// list取得
+	e.GET("/topics", app.GetTopicList)
+	e.GET("/topics/:id", app.GetPostList)
+	e.GET("/posts/:id", app.GetCommentList)
+
 	auth := e.Group("")
 	// トピック検索機能入れる、検索のエンドポイントは一覧取得と共通化する？
 	// 検索、ソート、フィルタリング、ページング制御でレイヤー化できるかも
-	auth.GET("/topics", app.GetTopicList)
+	auth.Use(customMiddleware.Authentication)
+	// トピックCRUD操作
 	auth.POST("/topics", app.CreateTopic)
-	auth.GET("/topics/:id", app.GetPostList)
+	auth.PUT("/topics/:id", app.EditTopic)
+	auth.DELETE("/topics/:id", app.DeleteTopic)
+
+	// マップ内ポストCRUD操作
 	auth.POST("/topics/:id", app.CreatePost)
-	auth.GET("/posts/:id", app.GetCommentList)
+	// auth.PUT("/posts/:id", app.EditPost)
+	// auth.DELETE("/posts/:id", app.DeletePost)
+
+	// コメントCRUD操作
 	auth.POST("/posts/:id", app.CreateComment)
+	// auth.PUT("/comments/:id", app.EditComment)
+	// auth.DELETE("/comments/:id", app.DeleteComment) 
 
 	log.Fatal(e.Start(":" + port))
 }

@@ -38,6 +38,11 @@ func DBSet() *mongo.Client {
 
 var Client *mongo.Client = DBSet()
 
+func UserData(client *mongo.Client, CollectionName string) *mongo.Collection {
+	var collection *mongo.Collection = client.Database("map-sns").Collection(CollectionName)
+	return collection
+}
+
 func TopicData(client *mongo.Client, CollectionName string) *mongo.Collection {
 	var topiccollection *mongo.Collection = client.Database("map-sns").Collection(CollectionName)
 	return topiccollection
