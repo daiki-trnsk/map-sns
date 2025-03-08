@@ -62,13 +62,13 @@ func main() {
 
 	// マップ内ポストCRUD操作
 	auth.POST("/topics/:id", app.CreatePost)
-	// auth.PUT("/posts/:id", app.EditPost)
-	// auth.DELETE("/posts/:id", app.DeletePost)
+	auth.PUT("/posts/:id", app.EditPost)
+	auth.DELETE("/posts/:id", app.DeletePost)
 
 	// コメントCRUD操作
 	auth.POST("/posts/:id", app.CreateComment)
-	// auth.PUT("/comments/:id", app.EditComment)
-	// auth.DELETE("/comments/:id", app.DeleteComment) 
+	auth.PUT("/comments/:id", app.EditComment)
+	auth.DELETE("/comments/:id", app.DeleteComment) 
 
 	log.Fatal(e.Start(":" + port))
 }
