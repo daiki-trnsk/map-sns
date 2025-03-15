@@ -5,10 +5,10 @@
   max-width: 800px;
   margin: 0px auto;
   padding: 20px;
-  padding-top: 100px;
+  padding-top: 80px;
   border-radius: 12px;
 }
-
+/* 
 .topic-list h1 {
   font-size: 2rem;
   color: #333;
@@ -16,7 +16,7 @@
   padding-bottom: 8px;
   margin-bottom: 20px;
   text-align: center;
-}
+} */
 
 .topic-form,
 .search-form {
@@ -138,6 +138,10 @@ button:hover {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.custom-div-icon.current-user-post .map-thumbnail {
+  background: rgb(7, 207, 0);
 }
 
 .post-detail-popup .leaflet-popup-content-wrapper {
@@ -295,18 +299,41 @@ details[open] summary::before {
   position: relative;
 }
 
-.app-title {
-  color: #f703ff;
-  font-family: 'Montserrat Subrayada', sans-serif;
-  left: 50%;
-  transform: translateX(-50%);
-  align-items: center;
+.header {
+  height: 60px;
   position: fixed;
-  font-size: 3rem;
-  font-weight: bold;
   z-index: 500;
-  filter: saturate(80%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-box-reflect: below -28px -webkit-gradient(linear, left bottom, left top, from(rgba(255, 255, 255, .6)), to(transparent));
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  /* align-items: center; */
+  box-sizing: border-box;
+  padding: 10px;
+}
+
+/* .header-left, .header-right {
+  display: flex;
+  align-items: center;
+} */
+
+.app-title {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.logo-img {
+  padding: 10px;
+  width: 250px;
+  height: auto;
+}
+
+.home-img, .account-img {
+  width: 30px;
+  height: auto;
+}
+
+.login-form {
+  padding-top: 80px;
 }

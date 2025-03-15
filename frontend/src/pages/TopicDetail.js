@@ -1,29 +1,28 @@
-import { useParams, Link } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import Map from "../components/Map";
 import { API_HOST } from "../common";
+import Header from "../components/UI/header";
 
 export default function TopicDetail() {
-  const { id } = useParams();
-  const [posts, setPosts] = useState([]);
+    const { id } = useParams();
+    const [posts, setPosts] = useState([]);
 
-  useEffect(() => {
-    fetch(`${API_HOST}/topics/${id}`)
-      .then((res) => res.json())
-      .then((data) => setPosts(data))
-      .catch((err) => console.error("Error:", err));
-  }, [id]);
+    useEffect(() => {
+        fetch(`${API_HOST}/topics/${id}`)
+            .then((res) => res.json())
+            .then((data) => setPosts(data))
+            .catch((err) => console.error("Error:", err));
+    }, [id]);
 
-  const handleAddPost = (newPost) => {
-    setPosts((prevPosts) => [...(prevPosts || []), newPost]);
-  };
+    const handleAddPost = (newPost) => {
+        setPosts((prevPosts) => [...(prevPosts || []), newPost]);
+    };
 
-  return (
-    <div className="full-view">
-      <Link to={"/"}>
-        <div className="app-title">MAPOST</div>
-      </Link>
-      <Map posts={posts} onAddPost={handleAddPost} id={id} />
-    </div>
-  );
+    return (
+        <div className="full-view">
+            <Header />
+            <Map posts={posts} onAddPost={handleAddPost} id={id} />
+        </div>
+    );
 }
