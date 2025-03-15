@@ -52,9 +52,11 @@ func main() {
 	e.GET("/posts/:id", app.GetCommentList)
 
 	auth := e.Group("")
-	// トピック検索機能入れる、検索のエンドポイントは一覧取得と共通化する？
+
+	// エンドポイントパラメータ見直し
 	// 検索、ソート、フィルタリング、ページング制御でレイヤー化できるかも
 	auth.Use(customMiddleware.Authentication)
+	
 	// トピックCRUD操作
 	auth.POST("/topics", app.CreateTopic)
 	auth.PUT("/topics/:id", app.EditTopic)
@@ -69,6 +71,10 @@ func main() {
 	auth.POST("/posts/:id", app.CreateComment)
 	auth.PUT("/comments/:id", app.EditComment)
 	auth.DELETE("/comments/:id", app.DeleteComment) 
+
+	// ユーザー情報取得
+	// やっぱ分けた方がいい？
+	auth.GET("/me", app.GetUserData)
 
 	log.Fatal(e.Start(":" + port))
 }

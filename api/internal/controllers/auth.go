@@ -77,7 +77,7 @@ func SignUp(c echo.Context) error {
 	if inserterr != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "the user did not created"})
 	}
-	return c.JSON(http.StatusCreated, "Succesfully signed in!")
+	return c.JSON(http.StatusCreated, user)
 }
 
 func Login(c echo.Context) error {

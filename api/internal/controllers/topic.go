@@ -79,23 +79,23 @@ func (app *Application) EditTopic(c echo.Context) error {
 	topic.Updated_At = time.Now()
 
 	filter := bson.M{
-        "_id":     objectID, 
-        "user_id": currentUserID,
-    }
+		"_id":     objectID,
+		"user_id": currentUserID,
+	}
 	update := bson.M{
-        "$set": bson.M{
-            "topic_title": topic.Topic_Title,
-            "description": topic.Description,
-            "updated_at": topic.Updated_At,
-        },
-    }
-	err = app.topicCollection.FindOneAndUpdate(ctx, filter, update,  options.FindOneAndUpdate().SetReturnDocument(options.After)).Decode(&topic)
+		"$set": bson.M{
+			"topic_title": topic.Topic_Title,
+			"description": topic.Description,
+			"updated_at":  topic.Updated_At,
+		},
+	}
+	err = app.topicCollection.FindOneAndUpdate(ctx, filter, update, options.FindOneAndUpdate().SetReturnDocument(options.After)).Decode(&topic)
 	if err != nil {
-        if err == mongo.ErrNoDocuments {
-            return errorResponse(c, http.StatusForbidden, "Topic not found or Not your topic")
-        }
-        return errorResponse(c, http.StatusInternalServerError, "Failed to update topic")
-    }
+		if err == mongo.ErrNoDocuments {
+			return errorResponse(c, http.StatusForbidden, "Topic not found or Not your topic")
+		}
+		return errorResponse(c, http.StatusInternalServerError, "Failed to update topic")
+	}
 	return c.JSON(http.StatusOK, topic)
 }
 
@@ -112,15 +112,15 @@ func (app *Application) DeleteTopic(c echo.Context) error {
 	defer cancel()
 
 	filter := bson.M{
-        "_id":     objectID, 
-        "user_id": currentUserID,
-    }
+		"_id":     objectID,
+		"user_id": currentUserID,
+	}
 	err = app.topicCollection.FindOneAndDelete(ctx, filter).Err()
 	if err != nil {
-        if err == mongo.ErrNoDocuments {
-            return errorResponse(c, http.StatusForbidden, "Topic not found or Not your topic")
-        }
-        return errorResponse(c, http.StatusInternalServerError, "Failed to delete topic")
-    }
-    return c.NoContent(http.StatusNoContent)
+		if err == mongo.ErrNoDocuments {
+			return errorResponse(c, http.StatusForbidden, "Topic not found or Not your topic")
+		}
+		return errorResponse(c, http.StatusInternalServerError, "Failed to delete topic")
+	}
+	return c.NoContent(http.StatusNoContent)
 }
