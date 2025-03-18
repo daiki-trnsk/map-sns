@@ -2,7 +2,8 @@ import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import Map from "../components/Map";
 import { API_HOST } from "../common";
-import Header from "../components/UI/header";
+import Footer from "../components/UI/Footer";
+import Header from "../components/UI/Header";
 
 export default function TopicDetail() {
     const { id } = useParams();
@@ -23,6 +24,7 @@ export default function TopicDetail() {
         <div className="full-view">
             <Header />
             <Map posts={posts} onAddPost={handleAddPost} id={id} />
+            <Footer />
         </div>
     );
 }
