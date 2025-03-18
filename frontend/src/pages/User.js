@@ -2,8 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { API_HOST } from "../common";
 import { getToken } from "../utils/auth";
-import Header from "../components/UI/header";
+import Footer from "../components/UI/Footer";
 import UserInfo from "../components/UserInfo";
+import Header from "../components/UI/Header";
 
 export default function User() {
     const navigate = useNavigate();
@@ -35,6 +36,7 @@ export default function User() {
                     <p>Loading...</p>
                 )}
             </div>
+            <Footer />
         </>
     );
 }
