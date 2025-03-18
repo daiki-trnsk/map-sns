@@ -300,6 +300,7 @@ details[open] summary::before {
 }
 
 .header {
+  bottom: 0;
   height: 60px;
   position: fixed;
   z-index: 500;
@@ -309,6 +310,8 @@ details[open] summary::before {
   /* align-items: center; */
   box-sizing: border-box;
   padding: 10px;
+  background-color: white;
+  border-top: 1px solid #e0e0e0;
 }
 
 /* .header-left, .header-right {
@@ -316,20 +319,33 @@ details[open] summary::before {
   align-items: center;
 } */
 
+.header-right a {
+  text-decoration: none;
+}
+
+.header-right h3 {
+  color: black;
+  margin: 0;
+}
+
 .app-title {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  margin-top: 10px;
+  text-align: center;
+  width: 200px;
+  margin-left: auto;
+  margin-right: auto;
+  position: fixed;
+  z-index: 500;
+  left: 50%; /* 親要素の幅の50%の位置に配置 */
+  transform: translateX(-50%);
 }
 
 .logo-img {
-  padding: 10px;
-  width: 250px;
+  width: 200px;
   height: auto;
 }
 
-.home-img, .account-img {
+.home-img, .account-img, .topic-create-img {
   width: 30px;
   height: auto;
 }
