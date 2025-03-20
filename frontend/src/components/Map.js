@@ -22,16 +22,21 @@ export default function Map({ posts, onAddPost, id }) {
     const [selectedPosition, setSelectedPosition] = useState(null);
     const [editingPostId, setEditingPostId] = useState(null);
     const [editedPost, setEditedPost] = useState(null);
-
-    const currentUserID = isLoggedIn ? isLoggedIn.user._id : null;
+    const [currentUserID, setCurrentUserID] = useState(null);
 
     useEffect(() => {
+        if (isLoggedIn && isLoggedIn.user) {
+            setCurrentUserID(isLoggedIn.user._id);
+        } else {
+            setCurrentUserID(null);
+        }
+        console.log("isloggedin", isLoggedIn);
+        console.log("cuurentuserid", currentUserID);
+
         if (posts) {
             setLocalTopics(posts);
         }
-    }, [posts]);
-
-    console.log(localPosts);
+    }, [isLoggedIn, posts]);
 
     function MapClickHandler() {
         useMapEvent({
@@ -105,7 +110,7 @@ export default function Map({ posts, onAddPost, id }) {
     const handleDeleteClick = (id, e) => {
         e.stopPropagation();
         deletePost(id);
-    }
+    };
 
     return (
         <MapContainer
@@ -120,18 +125,24 @@ export default function Map({ posts, onAddPost, id }) {
             {Array.isArray(localPosts) && localPosts.length > 0 ? (
                 localPosts.map((post) => {
                     const isCurrentUserPost = post.user_id === currentUserID;
+                    const circleClass = isCurrentUserPost ? "circle-current-user" : "circle";
+                    const triangleClass = isCurrentUserPost ? "triangle-current-user" : "triangle";
+                    const titleClass = isCurrentUserPost ? "post-title-current-user" : "post-title";
+                    
+                    // console.log(post.id, currentUserID);
+                    // console.log(isCurrentUserPost)
                     const htmlIcon = L.divIcon({
-                        className: `custom-div-icon ${
-                            isCurrentUserPost ? "current-user-post" : ""
-                        }`,
+                        className: `custom-div-icon`,
                         html: `
               <div class="map-thumbnail">
+                <div class=${circleClass}></div>
                 <img src="${post.imageUrl}"/>
-                <p>${post.post_title}</p>
+                <div class=${triangleClass}></div>
+                <div class="${titleClass}"><p>${post.post_title}</p><div>
               </div>
             `,
                         iconSize: [60, 60],
-                        iconAnchor: [30, 60],
+                        iconAnchor: [40, 96],
                     });
 
                     return (
@@ -141,7 +152,7 @@ export default function Map({ posts, onAddPost, id }) {
                             icon={htmlIcon}
                         >
                             <Popup
-                                offset={[0, -50]}
+                                offset={[0, -85]}
                                 className="post-detail-popup"
                             >
                                 <div className="popup-content">
@@ -166,7 +177,10 @@ export default function Map({ posts, onAddPost, id }) {
                                             <>
                                                 <button
                                                     onClick={(e) =>
-                                                        handleSaveClick(post.id, e)
+                                                        handleSaveClick(
+                                                            post.id,
+                                                            e
+                                                        )
                                                     }
                                                 >
                                                     save
@@ -181,24 +195,27 @@ export default function Map({ posts, onAddPost, id }) {
                                             </>
                                         ) : (
                                             <>
-                                            <button
-                                                onClick={(e) =>
-                                                    handleEditClick(post, e)
-                                                }
-                                            >
-                                                edit
-                                            </button>
-                                            <button
-                                            onClick={(e) =>
-                                                handleDeleteClick(post.id, e)
-                                            }
-                                        >
-                                            delete
-                                        </button>
-                                        </>
+                                                <button
+                                                    onClick={(e) =>
+                                                        handleEditClick(post, e)
+                                                    }
+                                                >
+                                                    edit
+                                                </button>
+                                                <button
+                                                    onClick={(e) =>
+                                                        handleDeleteClick(
+                                                            post.id,
+                                                            e
+                                                        )
+                                                    }
+                                                >
+                                                    delete
+                                                </button>
+                                            </>
                                         )
                                     ) : (
-                                        <p>by {post.user_id}</p>
+                                        <p>by {post.nickname}</p>
                                     )}
                                     <div className="popup-body">
                                         <img

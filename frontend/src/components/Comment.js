@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { API_HOST } from "../common";
 import { getToken } from "../utils/auth";
 import { AuthContext } from "../context/AuthContext";
+import { formatDateToYYYYMMDDHHMM } from "../utils/format";
 
 export default function Comment({ id }) {
     const { isLoggedIn } = useContext(AuthContext);
@@ -74,7 +75,8 @@ export default function Comment({ id }) {
                         .reverse()
                         .map((c, index) => (
                             <div key={index} className="comment-item">
-                                <p>{c.text}</p>
+                                <p>{c.text}</p> 
+                                <p className="comment-date">{formatDateToYYYYMMDDHHMM(c.created_at)}</p>
                                 <hr />
                             </div>
                         ))

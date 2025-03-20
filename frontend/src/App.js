@@ -5,6 +5,7 @@ import TopicDetail from "./pages/TopicDetail";
 import Auth from "./pages/Auth";
 import Register from "./pages/Register";
 import User from "./pages/User";
+import TopicCreate from "./pages/TopicCreate";
 
 function App() {
     return (
@@ -16,6 +17,7 @@ function App() {
                     <Route path="/user" element={<User />} />
                     <Route path="/login" element={<Auth />} />
                     <Route path="/register" element={<Register />} />
+                    <Route path="/create" element={<TopicCreate />} />
                 </Routes>
             </Router>
         </AuthProvider>

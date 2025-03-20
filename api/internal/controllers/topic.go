@@ -13,7 +13,13 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 
 	"github.com/daiki-trnsk/map-sns/internal/models"
+	"github.com/daiki-trnsk/map-sns/internal/repositories"
 )
+
+type TopicWithNickName struct {
+	models.Topic
+	NickName string `json:"nickname"`
+}
 
 // トピック一覧の取得
 func (app *Application) GetTopicList(c echo.Context) error {
@@ -33,11 +39,33 @@ func (app *Application) GetTopicList(c echo.Context) error {
 	}
 	defer cursor.Close(ctx)
 	err = cursor.All(ctx, &topiclist)
+
 	if err != nil {
 		log.Println("Error decoding topics:", err)
 		return errorResponse(c, http.StatusInternalServerError, "Failed to decode topics")
 	}
-	return c.JSON(http.StatusOK, topiclist)
+
+	topiclistWithUserName, err := getUserNameForTopics(topiclist)
+	if err != nil {
+		return errorResponse(c, http.StatusInternalServerError, "Failed to get user names")
+	}
+	return c.JSON(http.StatusOK, topiclistWithUserName)
+}
+
+// トピック作成者のニックネーム取得
+func getUserNameForTopics(topics []models.Topic) ([]TopicWithNickName, error) {
+	var topicsWithUserName []TopicWithNickName
+	for _, topic := range topics {
+		nickName, err := repositories.GetUserNameByID(topic.UserID)
+		if err != nil {
+			return nil, err
+		}
+		topicsWithUserName = append(topicsWithUserName, TopicWithNickName{
+            Topic:    topic,
+            NickName: nickName,
+        })
+	}
+	return topicsWithUserName, nil
 }
 
 // トピックの作成

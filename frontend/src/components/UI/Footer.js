@@ -4,6 +4,8 @@ import { AuthContext } from "../../context/AuthContext";
 import home from "../../assets/home.png";
 import account from "../../assets/account.png";
 import topicCreate from "../../assets/topicCreate.png";
+import login from "../../assets/login.png";
+import login2 from "../../assets/login2.png";
 
 export default function Footer() {
     const { isLoggedIn } = useContext(AuthContext);
@@ -12,11 +14,15 @@ export default function Footer() {
         <div className="header">
             <div className="header-left">
                 <Link to={"/"}>
-                    <img src={home} className="home-img"/>
+                    <img src={home} className="home-img" />
                 </Link>
             </div>
             <div className="header-center">
-                <img src={topicCreate} className="topic-create-img" />
+                {isLoggedIn && (
+                    <Link to={"/create"}>
+                        <img src={topicCreate} className="topic-create-img" />
+                    </Link>
+                )}
             </div>
             <div className="header-right">
                 {isLoggedIn ? (
@@ -25,7 +31,7 @@ export default function Footer() {
                     </Link>
                 ) : (
                     <Link to={"/login"}>
-                        <h3>Login</h3>
+                        <img src={login} className="login-img" />
                     </Link>
                 )}
             </div>

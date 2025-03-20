@@ -13,7 +13,13 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 
 	"github.com/daiki-trnsk/map-sns/internal/models"
+	"github.com/daiki-trnsk/map-sns/internal/repositories"
 )
+
+type PostWithNickName struct {
+	models.Post
+	NickName string `json:"nickname"`
+}
 
 // ポスト一覧の取得
 func (app *Application) GetPostList(c echo.Context) error {
@@ -38,7 +44,27 @@ func (app *Application) GetPostList(c echo.Context) error {
 		log.Println("Error decoding posts:", err)
 		return errorResponse(c, http.StatusInternalServerError, "Failed to decode posts")
 	}
-	return c.JSON(http.StatusOK, postlist)
+	postlistWithNickName, err := getUserNameForPosts(postlist)
+	if err != nil {
+		return errorResponse(c, http.StatusInternalServerError, "Failed to get user names")
+	}
+	return c.JSON(http.StatusOK, postlistWithNickName)
+}
+
+// ピン作成者のニックネーム取得
+func getUserNameForPosts(posts []models.Post) ([]PostWithNickName, error) {
+	var postsWithUserName []PostWithNickName
+	for _, post := range posts {
+		nickName, err := repositories.GetUserNameByID(post.UserID)
+		if err != nil {
+			return nil, err
+		}
+		postsWithUserName = append(postsWithUserName, PostWithNickName{
+            Post:    post,
+            NickName: nickName,
+        })
+	}
+	return postsWithUserName, nil
 }
 
 // ポストの作成

@@ -22,34 +22,34 @@ export const AuthProvider = ({ children }) => {
                     },
                 });
                 const data = await res.json();
-                    if (res.ok) {
-					// console.log("ok, data:", data);
+                if (res.ok) {
+                    console.log("data", data);
                     return data;
                 } else {
                     throw new Error(res.status + " " + data.error);
                 }
             } catch (err) {
-				console.log("err:", err);
+                console.log("err:", err);
                 return null;
             }
         } else {
-			// console.log("isTokenfalse");
+            // console.log("isTokenfalse");
             return null;
         }
     };
 
     useEffect(() => {
-		const checkAuthentication = async () => {
-			const auth = await checkAuth();
-			// console.log("auth", auth);
-			setIsLoggedIn(auth);
-		};
-	
-		checkAuthentication();
+        const checkAuthentication = async () => {
+            const auth = await checkAuth();
+            // console.log("auth", auth);
+            setIsLoggedIn(auth);
+        };
+
+        checkAuthentication();
     }, []);
 
     return (
-        <AuthContext.Provider value={{ isLoggedIn, setIsLoggedIn }}>
+        <AuthContext.Provider value={{ isLoggedIn, setIsLoggedIn, checkAuth }}>
             {children}
         </AuthContext.Provider>
     );

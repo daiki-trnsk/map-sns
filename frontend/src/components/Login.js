@@ -5,7 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 
 export default function Login() {
-    const { setIsLoggedIn } = useContext(AuthContext);
+    const { setIsLoggedIn, checkAuth } = useContext(AuthContext);
 
     const navigate = useNavigate();
 
@@ -35,9 +35,11 @@ export default function Login() {
                 throw new Error("Failed to login");
             }
             const data = await res.json();
-            // console.log("token:", data.token);
+            console.log("login res:", data);
             setToken(data.token);
-            setIsLoggedIn(data);
+            const auth = await checkAuth();
+            console.log("login auth:", auth);
+            setIsLoggedIn(auth);
 
             setEmail("");
             setPassword("");
