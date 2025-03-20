@@ -14,12 +14,10 @@ function App() {
   }, [location]);
 
   return (
-    <Router>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/topic/:id" element={<TopicDetail />} />
       </Routes>
-    </Router>
   );
 }
 
