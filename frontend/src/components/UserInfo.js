@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { getToken, removeToken } from "../utils/auth";
 import { API_HOST } from "../common";
 import { AuthContext } from "../context/AuthContext";
+import { formatDateToYYYYMMDDHHMM } from "../utils/format";
 
 export default function UserInfo({ userData }) {
     const navigate = useNavigate();
@@ -37,9 +38,7 @@ export default function UserInfo({ userData }) {
         }
         const updatedTopic = await res.json();
         setTopics((prevTopics) =>
-            prevTopics.map((topic) =>
-                topic.id === id ? updatedTopic : topic
-            )
+            prevTopics.map((topic) => (topic.id === id ? updatedTopic : topic))
         );
     };
 
@@ -61,7 +60,10 @@ export default function UserInfo({ userData }) {
 
     const handleEditClick = (topic) => {
         setEditingTopicId(topic.id);
-        setEditedTopic({ topic_title: topic.topic_title, description: topic.description });
+        setEditedTopic({
+            topic_title: topic.topic_title,
+            description: topic.description,
+        });
     };
 
     const handleDelClick = (id) => {
@@ -72,12 +74,12 @@ export default function UserInfo({ userData }) {
         editTopic(id);
         setEditingTopicId(null);
         setEditedTopic({ topic_title: "", description: "" });
-    }
+    };
 
     const handleCancelClick = () => {
         setEditingTopicId(null);
         setEditedTopic({ topic_title: "", description: "" });
-    }
+    };
 
     const handleLogout = () => {
         removeToken();
@@ -98,7 +100,7 @@ export default function UserInfo({ userData }) {
                     topics.map((topic) => (
                         <div key={topic.id} className="topic-item">
                             {editingTopicId === topic.id ? (
-                                <div>
+                                <div className="topic-item-content">
                                     <input
                                         type="text"
                                         value={editedTopic.topic_title}
@@ -132,19 +134,47 @@ export default function UserInfo({ userData }) {
                             ) : (
                                 <Link
                                     to={`/topic/${topic.id}`}
-                                    className="topic-title"
+                                    className="topic-item"
                                     key={topic.id}
                                 >
-                                    {topic.topic_title}
-                                    <p>{topic.description}</p>
+                                    <div className="topic-item-content">
+                                        <div className="topic-item-title">
+                                            {topic.topic_title}
+                                        </div>
+                                        <div className="topic-item-description">
+                                            <p>{topic.description}</p>
+                                        </div>
+                                        <div className="topic-item-info">
+                                            <p> Created:&emsp;
+                                                {formatDateToYYYYMMDDHHMM(
+                                                    topic.created_at
+                                                )}
+                                            </p>
+                                            <p> Updeted:&emsp;
+                                                {formatDateToYYYYMMDDHHMM(
+                                                    topic.updated_at
+                                                )}
+                                            </p>
+                                        </div>
+                                        <button
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                handleEditClick(topic);
+                                            }}
+                                        >
+                                            edit
+                                        </button>
+                                        <button
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                handleDelClick(topic.id);
+                                            }}
+                                        >
+                                            del
+                                        </button>
+                                    </div>
                                 </Link>
                             )}
-                            <button onClick={() => handleEditClick(topic)}>
-                                edit
-                            </button>
-                            <button onClick={() => handleDelClick(topic.id)}>
-                                del
-                            </button>
                         </div>
                     ))
                 ) : (
