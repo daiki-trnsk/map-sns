@@ -8,6 +8,6 @@
     "scripts": {
         "start": "react-scripts start",
         "build": "react-scripts build",
-        "postbuild": "cp static.json build/"
+        "postbuild": "cp ./static.json ./build/static.json"
     }
 }
