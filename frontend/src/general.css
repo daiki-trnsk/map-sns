@@ -146,7 +146,12 @@
 
 .topic-form-title {
   width: 80%;
-  height: 3.5em;
+  height: 3em;
+  border-radius: 6px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+  font-weight: 600;
 }
 
 .topic-form-description {
@@ -157,6 +162,19 @@
   width: 80%;
   height: 100px !important;
   resize: none;
+}
+
+.topic-form-title::placeholder, .topic-form-description::placeholder {
+  color: #ccc;
+}
+
+.topic-form button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: 600;
+  color: dodgerblue;
 }
 
 /* input[type="text"] {
@@ -616,6 +634,14 @@ details[open] summary::before {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
+.auth-logo {
+  width: 100%;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .login-form {
   margin-top: 30px;
   width: 100%;
@@ -625,8 +651,8 @@ details[open] summary::before {
   width: 50px;
   height: 50px;
   font-size: 30px;
-  /* border: 2px solid #f703ff; */
-  border: none;
+  border: 2px solid #000000;
+  /* border: none; */
   border-radius: 50%;
   background-color: transparent;
   padding: 0;
@@ -639,6 +665,7 @@ details[open] summary::before {
 .auth-form button:hover {
   cursor: pointer;
   background-color: #f703ff;
+  border: none;
   color: white;
 }
 
@@ -673,7 +700,7 @@ details[open] summary::before {
 
 .auth-info p {
   margin: 0;
-  padding-top: 80px;
+  padding-top: 20px;
 }
 
 .auth-form input {

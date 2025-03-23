@@ -72,7 +72,7 @@ export default function TopicCreate() {
                             maxLength={500}
                             required
                         />
-                        <button type="submit">追加</button>
+                        <button type="submit">POST</button>
                     </form>
                 ) : (
                     <div className="login-for-topic">
