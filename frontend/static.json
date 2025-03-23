@@ -1,9 +1,13 @@
 {
     "routes": [
-      {
-        "src": ".*",
-        "dest": "/index.html"
-      }
-    ]
-  }
-  
+        {
+            "src": ".*",
+            "dest": "/index.html"
+        }
+    ],
+    "scripts": {
+        "start": "react-scripts start",
+        "build": "react-scripts build",
+        "postbuild": "cp static.json build/"
+    }
+}
