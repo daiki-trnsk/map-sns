@@ -3,7 +3,7 @@ import { API_HOST } from "../common";
 import { Link, useNavigate } from "react-router-dom";
 import { setToken } from "../utils/auth";
 import { AuthContext } from "../context/AuthContext";
-import Header from "./UI/Header";
+import logo from "../assets/logo.png";
 
 export default function SignUp() {
     const { setIsLoggedIn } = useContext(AuthContext);
@@ -62,8 +62,10 @@ export default function SignUp() {
     return (
         <div className="auth-container">
             <div className="auth-form">
+                <div className="auth-logo">
+                    <img src={logo} alt="logo" className="logo-img" />
+                </div>
                 <div className="auth-info">
-                    <Header />
                     <p>お気に入りの場所をシェアしよう</p>
                 </div>
                 <form onSubmit={handleSubmit} className="login-form">
