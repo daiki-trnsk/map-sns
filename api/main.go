@@ -46,34 +46,42 @@ func main() {
 	e.POST("/signup", controllers.SignUp)
 	e.POST("/login", controllers.Login)
 	
-	// list取得
-	e.GET("/topics", app.GetTopicList)
-	e.GET("/topics/:id", app.GetPostList)
-	e.GET("/posts/:id", app.GetCommentList)
+	optAuth := e.Group("")
+	optAuth.Use(customMiddleware.OptionalAuthentication)
+	
+	// list取得系
+	// 認証の有無で処理分け可能に
+	optAuth.GET("/topics", app.GetTopicList)
+	optAuth.GET("/topics/:id", app.GetPostList)
+	optAuth.GET("/posts/:id", app.GetCommentList)
 
 	auth := e.Group("")
-
-	// エンドポイントパラメータ見直し
-	// 検索、ソート、フィルタリング、ページング制御でレイヤー化できるかも
 	auth.Use(customMiddleware.Authentication)
-	
-	// トピックCRUD操作
+
+	// トピック操作
 	auth.POST("/topics", app.CreateTopic)
 	auth.PUT("/topics/:id", app.EditTopic)
 	auth.DELETE("/topics/:id", app.DeleteTopic)
 
-	// マップ内ポストCRUD操作
+	// トピックお気に入り操作
+	auth.POST("/topics/:id/like", app.LikeTopic)
+	auth.DELETE("/topics/:id/like", app.LikeTopic)
+
+	// マップ内ポスト操作
 	auth.POST("/topics/:id", app.CreatePost)
 	auth.PUT("/posts/:id", app.EditPost)
 	auth.DELETE("/posts/:id", app.DeletePost)
 
-	// コメントCRUD操作
+	// マップ内ポストいいね操作
+	auth.POST("/posts/:id/like", app.LikePost)
+	auth.DELETE("/posts/:id/like", app.LikePost)
+
+	// コメント操作
 	auth.POST("/posts/:id", app.CreateComment)
 	auth.PUT("/comments/:id", app.EditComment)
 	auth.DELETE("/comments/:id", app.DeleteComment) 
 
 	// ユーザー情報取得
-	// やっぱ分けた方がいい？
 	auth.GET("/me", app.GetUserData)
 
 	log.Fatal(e.Start(":" + port))

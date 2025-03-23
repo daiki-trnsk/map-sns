@@ -86,7 +86,6 @@ export default function PostForm({
     const handleUpload = async () => {
         if (!image) return null;
 
-        setUploading(true);
         const compressedImage = await compressImage(image, 0.7, 800, 800);
         const fileExtension = compressedImage.name.split(".").pop();
         const uniqueFileName = `${uuidv4()}.${fileExtension}`;
@@ -102,7 +101,6 @@ export default function PostForm({
             return null;
         }
 
-        setUploading(false);
         const { data } = supabase.storage
             .from("map-sns")
             .getPublicUrl(filePath);
@@ -112,6 +110,7 @@ export default function PostForm({
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setUploading(true);
 
         const imageUrl = await handleUpload();
 
@@ -122,85 +121,62 @@ export default function PostForm({
             location: { lat: lat, lng: lng },
         };
 
-        fetch(`${API_HOST}/topics/${id}`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `${getToken()}`,
-            },
-            body: JSON.stringify(newPost),
-        })
-            .then((res) => res.json())
-            .then((data) => {
-                onAddPost(data);
-                setTitle("");
-                setDescription("");
-                setImage(null);
-                setPreview(null);
-                setSelectedPosition(null);
-                if (fileInputRef.current) {
-                    fileInputRef.current.value = "";
-                }
-            })
-            .catch((err) => console.error("Post Error:", err));
+        try {
+            const res = await fetch(`${API_HOST}/topics/${id}`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `${getToken()}`,
+                },
+                body: JSON.stringify(newPost),
+            });
+            const data = await res.json();
+            onAddPost(data);
+            setTitle("");
+            setDescription("");
+            setImage(null);
+            setPreview(null);
+            setSelectedPosition(null);
+            if (fileInputRef.current) {
+                fileInputRef.current.value = "";
+            }
+        } catch (err) {
+            console.error("Post Error:", err);
+        } finally {
+            setUploading(false);
+        }
     };
 
     return (
-        <>
+        <div className="post-container">
             {isLoggedIn ? (
-                <form
-                    onSubmit={handleSubmit}
-                    style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        width: "250px",
-                        margin: "0 auto",
-                        paddingTop: "10px",
-                    }}
-                >
+                <form onSubmit={handleSubmit} className="post-form">
                     <input
+                    className="post-form-title"
                         type="text"
                         value={post_title}
                         onChange={(e) => setTitle(e.target.value)}
                         placeholder="タイトル"
                         maxLength={500}
                         required
-                        style={{
-                            width: "100%",
-                            padding: "10px",
-                            marginBottom: "15px",
-                            border: "1px solid #ccc",
-                            borderRadius: "5px",
-                        }}
                     />
                     <textarea
+                    className="post-form-description"
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
                         placeholder="説明"
                         required
                         maxLength={500}
-                        style={{
-                            width: "100%",
-                            padding: "10px",
-                            marginBottom: "15px",
-                            border: "1px solid #ccc",
-                            borderRadius: "5px",
-                            resize: "vertical",
-                        }}
                     />
                     <input
                         type="file"
                         accept="image/*"
                         onChange={handleImageChange}
                         ref={fileInputRef}
-                        // required
-                        style={{
-                            marginBottom: "15px",
-                        }}
                     />
                     {preview && (
                         <img
+                        className="post-form-img"
                             src={preview}
                             alt="プレビュー"
                             style={{
@@ -214,22 +190,6 @@ export default function PostForm({
                     <button
                         type="submit"
                         disabled={uploading}
-                        style={{
-                            padding: "10px 20px",
-                            fontSize: "16px",
-                            color: "#fff",
-                            backgroundColor: "#f703fff",
-                            border: "none",
-                            borderRadius: "5px",
-                            cursor: "pointer",
-                            transition: "background-color 0.3s",
-                        }}
-                        onMouseOver={(e) =>
-                            (e.target.style.backgroundColor = "#a804ad")
-                        }
-                        onMouseOut={(e) =>
-                            (e.target.style.backgroundColor = "#f703ff")
-                        }
                     >
                         {uploading ? "アップロード中..." : "投稿"}
                     </button>
@@ -242,6 +202,6 @@ export default function PostForm({
                     </Link>
                 </div>
             )}
-        </>
+        </div>
     );
 }

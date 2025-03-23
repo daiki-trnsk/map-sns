@@ -1,5 +1,5 @@
 import React, { createContext, useEffect, useState } from "react";
-import { getToken, isToken } from "../utils/auth";
+import { getToken, isToken, removeToken } from "../utils/auth";
 import { API_HOST } from "../common";
 
 const initialState = {
@@ -23,13 +23,16 @@ export const AuthProvider = ({ children }) => {
                 });
                 const data = await res.json();
                 if (res.ok) {
-                    console.log("data", data);
                     return data;
                 } else {
                     throw new Error(res.status + " " + data.error);
                 }
             } catch (err) {
-                console.log("err:", err);
+                if (err.message && err.message.includes("expired")) {
+                    console.log("err:", err);
+                    removeToken();
+                }
+                // リフレッシュトークン関係実装するまで仮に期限切れのときトークン消す
                 return null;
             }
         } else {

@@ -11,20 +11,20 @@ export default function Footer() {
     const { isLoggedIn } = useContext(AuthContext);
 
     return (
-        <div className="header">
-            <div className="header-left">
+        <div className="footer">
+            <div className="footer-left">
                 <Link to={"/"}>
                     <img src={home} className="home-img" />
                 </Link>
             </div>
-            <div className="header-center">
+            <div className="footer-center">
                 {isLoggedIn && (
                     <Link to={"/create"}>
                         <img src={topicCreate} className="topic-create-img" />
                     </Link>
                 )}
             </div>
-            <div className="header-right">
+            <div className="footer-right">
                 {isLoggedIn ? (
                     <Link to={"/user"}>
                         <img src={account} className="account-img" />

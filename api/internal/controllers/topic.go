@@ -16,9 +16,10 @@ import (
 	"github.com/daiki-trnsk/map-sns/internal/repositories"
 )
 
-type TopicWithNickName struct {
+type TopicWithUserInfo struct {
 	models.Topic
 	NickName string `json:"nickname"`
+	IsLiked  bool   `json:"is_liked"`
 }
 
 // トピック一覧の取得
@@ -45,27 +46,45 @@ func (app *Application) GetTopicList(c echo.Context) error {
 		return errorResponse(c, http.StatusInternalServerError, "Failed to decode topics")
 	}
 
-	topiclistWithUserName, err := getUserNameForTopics(topiclist)
+	userID := c.Get("uid")
+	userIDStr, ok := userID.(string)
+	if !ok {
+		if userIDStr != "" {
+			return errorResponse(c, http.StatusInternalServerError, "Failed to get user ID")
+		}
+	}
+
+	topiclistWithUserInfo, err := getUserInfoForTopics(topiclist, userIDStr)
 	if err != nil {
 		return errorResponse(c, http.StatusInternalServerError, "Failed to get user names")
 	}
-	return c.JSON(http.StatusOK, topiclistWithUserName)
+	return c.JSON(http.StatusOK, topiclistWithUserInfo)
 }
 
-// トピック作成者のニックネーム取得
-func getUserNameForTopics(topics []models.Topic) ([]TopicWithNickName, error) {
-	var topicsWithUserName []TopicWithNickName
+// トピックにニックネームと取得者がいいねしているかの情報を追加
+func getUserInfoForTopics(topics []models.Topic, userID string) ([]TopicWithUserInfo, error) {
+	var topicsWithUserInfo []TopicWithUserInfo
 	for _, topic := range topics {
+		// トピック作成者のユーザーネームの取得
 		nickName, err := repositories.GetUserNameByID(topic.UserID)
 		if err != nil {
 			return nil, err
 		}
-		topicsWithUserName = append(topicsWithUserName, TopicWithNickName{
-            Topic:    topic,
-            NickName: nickName,
-        })
+		// クライアントがいいねしているか
+		isLiked := false
+		if userID != "" {
+			if contains(topic.LikedUsers, userID) {
+				isLiked = true
+			}
+		}
+
+		topicsWithUserInfo = append(topicsWithUserInfo, TopicWithUserInfo{
+			Topic:    topic,
+			NickName: nickName,
+			IsLiked:  isLiked,
+		})
 	}
-	return topicsWithUserName, nil
+	return topicsWithUserInfo, nil
 }
 
 // トピックの作成
@@ -151,4 +170,53 @@ func (app *Application) DeleteTopic(c echo.Context) error {
 		return errorResponse(c, http.StatusInternalServerError, "Failed to delete topic")
 	}
 	return c.NoContent(http.StatusNoContent)
+}
+
+// トピックお気に入り操作
+func (app *Application) LikeTopic(c echo.Context) error {
+	topicID := c.Param("id")
+	objectID, err := primitive.ObjectIDFromHex(topicID)
+	if err != nil {
+		return errorResponse(c, http.StatusBadRequest, "Invalid Topic ID")
+	}
+	currentUserID := c.Get("uid").(string)
+
+	var ctx, cancel = context.WithTimeout(context.Background(), queryTimeout)
+	defer cancel()
+
+	var topic models.Topic
+	filter := bson.M{"_id": objectID}
+	err = app.topicCollection.FindOne(ctx, filter).Decode(&topic)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return errorResponse(c, http.StatusForbidden, "Topic not found")
+		}
+		return errorResponse(c, http.StatusInternalServerError, "Failed to find topic")
+	}
+
+	if c.Request().Method == "POST" {
+		if contains(topic.LikedUsers, currentUserID) {
+			return errorResponse(c, http.StatusConflict, "Already liked")
+		}
+		topic.LikedUsers = append(topic.LikedUsers, currentUserID)
+		topic.LikeCount++
+	} else if c.Request().Method == "DELETE" {
+		if !contains(topic.LikedUsers, currentUserID) {
+			return errorResponse(c, http.StatusConflict, "Not liked yet")
+		}
+		topic.LikedUsers = remove(topic.LikedUsers, currentUserID)
+		topic.LikeCount--
+	}
+
+	update := bson.M{
+		"$set": bson.M{
+			"liked_users": topic.LikedUsers,
+			"like_count":  topic.LikeCount,
+		},
+	}
+	err = app.topicCollection.FindOneAndUpdate(ctx, filter, update, options.FindOneAndUpdate().SetReturnDocument(options.After)).Decode(&topic)
+	if err != nil {
+		return errorResponse(c, http.StatusInternalServerError, "Failed to update topic")
+	}
+	return c.JSON(http.StatusOK, topic)
 }

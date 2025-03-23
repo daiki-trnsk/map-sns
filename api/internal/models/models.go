@@ -27,12 +27,9 @@ type Topic struct {
 	Created_At  time.Time          `bson:"created_at" json:"created_at"`
 	Updated_At  time.Time          `bson:"updated_at" json:"updated_at"`
 	UserID      string             `bson:"user_id" json:"user_id"`
+	LikedUsers  []string           `bson:"liked_users" json:"liked_users"`
+	LikeCount   int                `bson:"like_count" json:"like_count"`
 	// post数取得すべきか
-}
-
-type Location struct {
-	Lat float64 `bson:"lat" json:"lat"`
-	Lng float64 `bson:"lng" json:"lng"`
 }
 
 type Post struct {
@@ -45,6 +42,13 @@ type Post struct {
 	Created_At  time.Time          `bson:"created_at" json:"created_at"`
 	Updated_At  time.Time          `bson:"updated_at" json:"updated_at"`
 	UserID      string             `bson:"user_id" json:"user_id"`
+	LikedUsers  []string           `bson:"liked_users" json:"liked_users"`
+	LikeCount   int                `bson:"like_count" json:"like_count"`
+}
+
+type Location struct {
+	Lat float64 `bson:"lat" json:"lat"`
+	Lng float64 `bson:"lng" json:"lng"`
 }
 
 type Comment struct {
