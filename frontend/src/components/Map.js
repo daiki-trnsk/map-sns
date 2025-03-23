@@ -15,6 +15,13 @@ import DefaultIcon from "./PostMarker";
 import { AuthContext } from "../context/AuthContext";
 import { API_HOST } from "../common";
 import { getToken } from "../utils/auth";
+import heartFilled from "../assets/heartFilled.png";
+import heartNot from "../assets/heartNot.png";
+import pen from "../assets/pen.png";
+import garbage from "../assets/garbage.png";
+import check from "../assets/check.png";
+import back from "../assets/back.png";
+import { formatDateToYYYYMMDD } from "../utils/format";
 
 export default function Map({ posts, onAddPost, id }) {
     const { isLoggedIn, setIsLoggedIn } = useContext(AuthContext);
@@ -112,6 +119,36 @@ export default function Map({ posts, onAddPost, id }) {
         deletePost(id);
     };
 
+    const handleLikeClick = async (id, isLiked) => {
+        const method = isLiked ? "DELETE" : "POST";
+        const res = await fetch(`${API_HOST}/posts/${id}/like`, {
+            method: `${method}`,
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `${getToken()}`,
+            },
+        });
+        if (!res.ok) {
+            alert("いいね登録に失敗しました");
+            return;
+        }
+        const updatedPost = await res.json();
+        console.log(updatedPost);
+        setLocalTopics((prevPosts) =>
+            prevPosts.map((post) =>
+                post.id === id
+                    ? {
+                          ...post,
+                          is_liked: !isLiked,
+                          like_count: isLiked
+                              ? post.like_count - 1
+                              : post.like_count + 1,
+                      }
+                    : post
+            )
+        );
+    };
+
     return (
         <MapContainer
             center={[37, 138]}
@@ -125,10 +162,28 @@ export default function Map({ posts, onAddPost, id }) {
             {Array.isArray(localPosts) && localPosts.length > 0 ? (
                 localPosts.map((post) => {
                     const isCurrentUserPost = post.user_id === currentUserID;
-                    const circleClass = isCurrentUserPost ? "circle-current-user" : "circle";
-                    const triangleClass = isCurrentUserPost ? "triangle-current-user" : "triangle";
-                    const titleClass = isCurrentUserPost ? "post-title-current-user" : "post-title";
-                    
+                    const isLikedByUser = post.is_liked === true;
+                    console.log("isLikedByUser", isLikedByUser);
+
+                    const circleClass = isCurrentUserPost
+                        ? "circle-current-user"
+                        : isLikedByUser
+                        ? "circle-liked-by-other"
+                        : "circle";
+
+                    const triangleClass = isCurrentUserPost
+                        ? "triangle-current-user"
+                        : isLikedByUser
+                        ? "triangle-liked-by-other"
+                        : "triangle";
+
+                    // タイトルの場合のクラス名
+                    const titleClass = isCurrentUserPost
+                        ? "post-title-current-user"
+                        : isLikedByUser
+                        ? "post-title-liked-by-other"
+                        : "post-title";
+
                     // console.log(post.id, currentUserID);
                     // console.log(isCurrentUserPost)
                     const htmlIcon = L.divIcon({
@@ -174,7 +229,17 @@ export default function Map({ posts, onAddPost, id }) {
                                     )}
                                     {isCurrentUserPost ? (
                                         editingPostId === post.id ? (
-                                            <>
+                                            <div className="post-opt">
+                                                <button
+                                                    onClick={(e) =>
+                                                        handleCancelClick(e)
+                                                    }
+                                                >
+                                                    <img
+                                                        src={back}
+                                                        className="back-img"
+                                                    />
+                                                </button>
                                                 <button
                                                     onClick={(e) =>
                                                         handleSaveClick(
@@ -183,24 +248,23 @@ export default function Map({ posts, onAddPost, id }) {
                                                         )
                                                     }
                                                 >
-                                                    save
+                                                    <img
+                                                        src={check}
+                                                        className="check-img"
+                                                    />
                                                 </button>
-                                                <button
-                                                    onClick={(e) =>
-                                                        handleCancelClick(e)
-                                                    }
-                                                >
-                                                    cancel
-                                                </button>
-                                            </>
+                                            </div>
                                         ) : (
-                                            <>
+                                            <div className="post-opt">
                                                 <button
                                                     onClick={(e) =>
                                                         handleEditClick(post, e)
                                                     }
                                                 >
-                                                    edit
+                                                    <img
+                                                        src={pen}
+                                                        className="pen-img"
+                                                    />
                                                 </button>
                                                 <button
                                                     onClick={(e) =>
@@ -210,12 +274,52 @@ export default function Map({ posts, onAddPost, id }) {
                                                         )
                                                     }
                                                 >
-                                                    delete
+                                                    <img
+                                                        src={garbage}
+                                                        className="garbage-img"
+                                                    />
                                                 </button>
-                                            </>
+                                            </div>
                                         )
                                     ) : (
-                                        <p>by {post.nickname}</p>
+                                        <div className="post-info">
+                                            <div className="post-crated">
+                                                <p>
+                                                    by {post.nickname}&emsp;
+                                                    {formatDateToYYYYMMDD(
+                                                        post.created_at
+                                                    )}
+                                                </p>
+                                            </div>
+                                            {isLoggedIn && (
+                                                <div className="post-like">
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            handleLikeClick(
+                                                                post.id,
+                                                                post.is_liked
+                                                            );
+                                                        }}
+                                                    >
+                                                        {post.is_liked ? (
+                                                            <img
+                                                                src={
+                                                                    heartFilled
+                                                                }
+                                                                className="heart-img"
+                                                            />
+                                                        ) : (
+                                                            <img
+                                                                src={heartNot}
+                                                                className="heart-img"
+                                                            />
+                                                        )}
+                                                    </button>
+                                                    <p>{post.like_count}</p>
+                                                </div>
+                                            )}
+                                        </div>
                                     )}
                                     <div className="popup-body">
                                         <img
@@ -225,7 +329,7 @@ export default function Map({ posts, onAddPost, id }) {
                                         <div className="popup-text">
                                             <div className="description">
                                                 {editingPostId === post.id ? (
-                                                    <input
+                                                    <textarea
                                                         type="text"
                                                         value={
                                                             editedPost.description

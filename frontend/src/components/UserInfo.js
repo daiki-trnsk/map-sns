@@ -4,17 +4,31 @@ import { getToken, removeToken } from "../utils/auth";
 import { API_HOST } from "../common";
 import { AuthContext } from "../context/AuthContext";
 import { formatDateToYYYYMMDDHHMM } from "../utils/format";
+import pen from "../assets/pen.png";
+import garbage from "../assets/garbage.png";
+import account from "../assets/account.png";
+import starBlack from "../assets/starBlack.png";
+import starFrame from "../assets/starFrame.png";
+import starYellow from "../assets/starYellow.png";
+import starGray from "../assets/starGray.png";
+import check from "../assets/check.png";
+import back from "../assets/back.png";
 
 export default function UserInfo({ userData }) {
     const navigate = useNavigate();
     const { isLoggedIn, setIsLoggedIn } = useContext(AuthContext);
     const [topics, setTopics] = useState(userData.topics);
+    const [likedTopics, setLikedTopics] = useState(userData.liked_topics);
     const [editingTopicId, setEditingTopicId] = useState(null);
     const [editedTopic, setEditedTopic] = useState(null);
+    const [selectedList, setSelectedList] = useState("mine");
 
     useEffect(() => {
         if (userData.topics) {
             setTopics(userData.topics);
+        }
+        if (userData.liked_topics) {
+            setLikedTopics(userData.liked_topics);
         }
     }, [userData]);
 
@@ -87,6 +101,36 @@ export default function UserInfo({ userData }) {
         navigate("/login");
     };
 
+    const handleLikeClick = async (id, isLiked) => {
+        const method = isLiked ? "DELETE" : "POST";
+        const res = await fetch(`${API_HOST}/topics/${id}/like`, {
+            method: `${method}`,
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `${getToken()}`,
+            },
+        });
+        if (!res.ok) {
+            alert("お気に入り登録に失敗しました");
+            return;
+        }
+        const updatedTopic = await res.json();
+        console.log(updatedTopic);
+        setLikedTopics((prevTopics) =>
+            prevTopics.map((topic) =>
+                topic.id === id
+                    ? {
+                          ...topic,
+                          is_liked: !isLiked,
+                          like_count: isLiked
+                              ? topic.like_count - 1
+                              : topic.like_count + 1,
+                      }
+                    : topic
+            )
+        );
+    };
+
     return (
         <div className="user">
             <div className="user-info">
@@ -95,49 +139,174 @@ export default function UserInfo({ userData }) {
                 <button onClick={handleLogout}>ログアウト</button>
             </div>
             <div className="user-topics">
-                <h2>あなたのトピック</h2>
-                {topics && topics.length > 0 ? (
-                    topics.map((topic) => (
-                        <div key={topic.id} className="topic-item">
-                            {editingTopicId === topic.id ? (
-                                <div className="topic-item-content">
-                                    <input
-                                        type="text"
-                                        value={editedTopic.topic_title}
-                                        onChange={(e) =>
-                                            setEditedTopic({
-                                                ...editedTopic,
-                                                topic_title: e.target.value,
-                                            })
-                                        }
-                                    />
-                                    <textarea
-                                        value={editedTopic.description}
-                                        onChange={(e) =>
-                                            setEditedTopic({
-                                                ...editedTopic,
-                                                description: e.target.value,
-                                            })
-                                        }
-                                    />
-                                    <button
-                                        onClick={() =>
-                                            handleSaveClick(topic.id)
-                                        }
+                <div className="list-selecter">
+                    <div
+                        className={
+                            selectedList === "mine"
+                                ? "list-selected"
+                                : "list-selecter-right"
+                        }
+                    >
+                        <button
+                            onClick={() => setSelectedList("mine")}
+                            // className={selectedList === "mine" ? "selected" : ""}
+                        >
+                            <img src={account} className="account-img" />
+                        </button>
+                    </div>
+                    <div
+                        className={
+                            selectedList === "liked"
+                                ? "list-selected"
+                                : "list-selecter-left"
+                        }
+                    >
+                        <button
+                            onClick={() => setSelectedList("liked")}
+                            // className={selectedList === "liked" ? "selected" : ""}
+                        >
+                            <img src={starBlack} className="star-img" />
+                        </button>
+                    </div>
+                </div>
+                {selectedList === "mine" ? (
+                    topics && topics.length > 0 ? (
+                        topics.map((topic) => (
+                            <div key={topic.id} className="topic-item">
+                                {editingTopicId === topic.id ? (
+                                    <div className="topic-item-content">
+                                        <div className="topic-edit">
+                                            <input
+                                                type="text"
+                                                value={editedTopic.topic_title}
+                                                onChange={(e) =>
+                                                    setEditedTopic({
+                                                        ...editedTopic,
+                                                        topic_title:
+                                                            e.target.value,
+                                                    })
+                                                }
+                                            />
+                                            <textarea
+                                                value={editedTopic.description}
+                                                onChange={(e) =>
+                                                    setEditedTopic({
+                                                        ...editedTopic,
+                                                        description:
+                                                            e.target.value,
+                                                    })
+                                                }
+                                            />
+                                        </div>
+                                        <div className="topic-edit-buttons">
+                                            <button onClick={handleCancelClick}>
+                                                <img
+                                                    src={back}
+                                                    className="back-img"
+                                                />
+                                            </button>
+                                            <button
+                                                onClick={() =>
+                                                    handleSaveClick(topic.id)
+                                                }
+                                            >
+                                                <img
+                                                    src={check}
+                                                    className="check-img"
+                                                />
+                                            </button>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <Link
+                                        to={`/topic/${topic.id}`}
+                                        className="topic-item"
+                                        key={topic.id}
                                     >
-                                        完了
-                                    </button>
-                                    <button onClick={handleCancelClick}>
-                                        取り消し
-                                    </button>
-                                </div>
-                            ) : (
+                                        <div className="topic-item-content">
+                                            <div className="topic-item-title">
+                                                {topic.topic_title}
+                                            </div>
+                                            <div className="topic-item-description">
+                                                <p>{topic.description}</p>
+                                            </div>
+                                            <div className="topic-item-info">
+                                                <div className="topic-item-info-created">
+                                                    <p>
+                                                        {" "}
+                                                        Created:&emsp;
+                                                        {formatDateToYYYYMMDDHHMM(
+                                                            topic.created_at
+                                                        )}
+                                                    </p>
+                                                    <p>
+                                                        {" "}
+                                                        Updeted:&emsp;
+                                                        {formatDateToYYYYMMDDHHMM(
+                                                            topic.updated_at
+                                                        )}
+                                                    </p>
+                                                </div>
+                                                {isLoggedIn && (
+                                                    <div className="topic-item-info-likes">
+                                                        <img
+                                                            src={starGray}
+                                                            className="star-img"
+                                                        />
+                                                        <p>
+                                                            {topic.like_count}
+                                                        </p>
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <div className="topic-buttons">
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.preventDefault();
+                                                        handleEditClick(topic);
+                                                    }}
+                                                >
+                                                    <img
+                                                        src={pen}
+                                                        className="pen-img"
+                                                    />
+                                                </button>
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.preventDefault();
+                                                        handleDelClick(
+                                                            topic.id
+                                                        );
+                                                    }}
+                                                >
+                                                    <img
+                                                        src={garbage}
+                                                        className="garbage-img"
+                                                    />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </Link>
+                                )}
+                            </div>
+                        ))
+                    ) : (
+                        <p>まだトピックを投稿していません</p>
+                    )
+                ) : (
+                    <div className="topic-list-liked">
+                        {Array.isArray(likedTopics) &&
+                        likedTopics.length > 0 ? (
+                            likedTopics.map((topic) => (
                                 <Link
                                     to={`/topic/${topic.id}`}
                                     className="topic-item"
                                     key={topic.id}
                                 >
-                                    <div className="topic-item-content">
+                                    <div
+                                        key={topic.id}
+                                        className="topic-item-content"
+                                    >
                                         <div className="topic-item-title">
                                             {topic.topic_title}
                                         </div>
@@ -145,40 +314,48 @@ export default function UserInfo({ userData }) {
                                             <p>{topic.description}</p>
                                         </div>
                                         <div className="topic-item-info">
-                                            <p> Created:&emsp;
-                                                {formatDateToYYYYMMDDHHMM(
-                                                    topic.created_at
-                                                )}
-                                            </p>
-                                            <p> Updeted:&emsp;
-                                                {formatDateToYYYYMMDDHHMM(
-                                                    topic.updated_at
-                                                )}
-                                            </p>
+                                            <div className="topic-item-info-created">
+                                                <p>by {topic.nickname}</p>
+                                                <p>
+                                                    {formatDateToYYYYMMDDHHMM(
+                                                        topic.created_at
+                                                    )}
+                                                </p>
+                                            </div>
+                                            {isLoggedIn && (
+                                                <div className="topic-item-info-likes">
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            handleLikeClick(
+                                                                topic.id,
+                                                                topic.is_liked
+                                                            );
+                                                        }}
+                                                    >
+                                                        {topic.is_liked ? (
+                                                            <img
+                                                                src={starYellow}
+                                                                className="star-img"
+                                                            />
+                                                        ) : (
+                                                            <img
+                                                                src={starFrame}
+                                                                className="star-img"
+                                                            />
+                                                        )}
+                                                    </button>
+                                                    <p>{topic.like_count}</p>
+                                                </div>
+                                            )}
                                         </div>
-                                        <button
-                                            onClick={(e) => {
-                                                e.preventDefault();
-                                                handleEditClick(topic);
-                                            }}
-                                        >
-                                            edit
-                                        </button>
-                                        <button
-                                            onClick={(e) => {
-                                                e.preventDefault();
-                                                handleDelClick(topic.id);
-                                            }}
-                                        >
-                                            del
-                                        </button>
                                     </div>
                                 </Link>
-                            )}
-                        </div>
-                    ))
-                ) : (
-                    <p>まだトピックを投稿していません</p>
+                            ))
+                        ) : (
+                            <p>まだトピックにいいねしていません</p>
+                        )}
+                    </div>
                 )}
             </div>
         </div>

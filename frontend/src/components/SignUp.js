@@ -3,6 +3,7 @@ import { API_HOST } from "../common";
 import { Link, useNavigate } from "react-router-dom";
 import { setToken } from "../utils/auth";
 import { AuthContext } from "../context/AuthContext";
+import Header from "./UI/Header";
 
 export default function SignUp() {
     const { setIsLoggedIn } = useContext(AuthContext);
@@ -12,6 +13,7 @@ export default function SignUp() {
     const [nickname, setNickname] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -20,6 +22,9 @@ export default function SignUp() {
             alert("全ての項目を入力してください");
             return;
         }
+
+        setIsLoading(true);
+
         const userData = {
             nickname: nickname,
             email: email,
@@ -49,13 +54,19 @@ export default function SignUp() {
         } catch (error) {
             console.error(error);
             alert("サインアップに失敗しました");
+        } finally {
+            setIsLoading(false);
         }
     };
 
     return (
         <div className="auth-container">
-            <div className="login-form">
-                <form onSubmit={handleSubmit} className="email-form">
+            <div className="auth-form">
+                <div className="auth-info">
+                    <Header />
+                    <p>お気に入りの場所をシェアしよう</p>
+                </div>
+                <form onSubmit={handleSubmit} className="login-form">
                     <input
                         type="text"
                         value={nickname}
@@ -80,9 +91,20 @@ export default function SignUp() {
                         maxLength={500}
                         required
                     />
-                    <button type="submit">➔</button>
+                    <Link to={"/login"} className="register-link">
+                        Sign Up
+                    </Link>
+
+                    {isLoading ? (
+                        <div class="spinner-box">
+                            <div class="three-quarter-spinner"></div>
+                        </div>
+                    ) : (
+                        <button type="submit" disabled={isLoading}>
+                            ➜
+                        </button>
+                    )}
                 </form>
-                <Link to={"/login"}>Login</Link>
             </div>
         </div>
     );

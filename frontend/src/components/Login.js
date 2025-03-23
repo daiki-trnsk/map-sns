@@ -3,6 +3,7 @@ import { API_HOST } from "../common";
 import { setToken } from "../utils/auth";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
+import Header from "./UI/Header";
 
 export default function Login() {
     const { setIsLoggedIn, checkAuth } = useContext(AuthContext);
@@ -11,6 +12,7 @@ export default function Login() {
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -19,6 +21,9 @@ export default function Login() {
             alert("タイトルと説明を入力してください！");
             return;
         }
+
+        setIsLoading(true);
+
         const userData = {
             email: email,
             password: password,
@@ -48,14 +53,21 @@ export default function Login() {
         } catch (error) {
             console.error("error:", error);
             alert("ログインに失敗しました");
+        } finally {
+            setIsLoading(false);
         }
     };
 
     return (
         <div className="auth-container">
-            <div className="login-form">
-                <form onSubmit={handleSubmit} className="email-form">
+            <div className="auth-form">
+                <div className="auth-info">
+                    <Header />
+                    <p>お気に入りの場所をシェアしよう</p>
+                </div>
+                <form onSubmit={handleSubmit} className="login-form">
                     <input
+                        className="email-input"
                         type="text"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
@@ -64,6 +76,7 @@ export default function Login() {
                         required
                     />
                     <input
+                        className="pwd-input"
                         type="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
@@ -71,9 +84,20 @@ export default function Login() {
                         maxLength={500}
                         required
                     />
-                    <button type="submit">➔</button>
+                    <Link to={"/register"} className="register-link">
+                        Sign Up
+                    </Link>
+
+                    {isLoading ? (
+                        <div class="spinner-box">
+                            <div class="three-quarter-spinner"></div>
+                        </div>
+                    ) : (
+                        <button type="submit" disabled={isLoading}>
+                            ➜
+                        </button>
+                    )}
                 </form>
-                <Link to={"/register"}>Sign Up</Link>
             </div>
         </div>
     );
