@@ -94,7 +94,7 @@ export default function SignUp() {
                         required
                     />
                     <Link to={"/login"} className="register-link">
-                        Sign Up
+                        Login
                     </Link>
 
                     {isLoading ? (
