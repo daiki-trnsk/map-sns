@@ -1,1 +1,1 @@
-export const API_HOST = `https://map-sns-api-dev.onrender.com`;
+export const API_HOST = process.env.REACT_APP_API_URL;
