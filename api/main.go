@@ -10,13 +10,10 @@ import (
 	"github.com/daiki-trnsk/map-sns/internal/controllers"
 	customMiddleware "github.com/daiki-trnsk/map-sns/internal/middleware"
 	// "github.com/daiki-trnsk/map-sns/internal/routes"
-	"github.com/daiki-trnsk/map-sns/pkg/config"
 	"github.com/daiki-trnsk/map-sns/pkg/database"
 )
 
 func main() {
-	config.LoadEnv()
-
 	database.Client = database.DBSet()
 
 	port := os.Getenv("PORT")
