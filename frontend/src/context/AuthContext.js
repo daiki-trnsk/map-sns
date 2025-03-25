@@ -36,7 +36,6 @@ export const AuthProvider = ({ children }) => {
                 return null;
             }
         } else {
-            // console.log("isTokenfalse");
             return null;
         }
     };
@@ -44,7 +43,6 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         const checkAuthentication = async () => {
             const auth = await checkAuth();
-            // console.log("auth", auth);
             setIsLoggedIn(auth);
         };
 

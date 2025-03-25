@@ -57,7 +57,6 @@ export default function TopicList() {
             return;
         }
         const updatedTopic = await res.json();
-        console.log(updatedTopic);
         setTopics((prevTopics) =>
             prevTopics.map((topic) =>
                 topic.id === id
