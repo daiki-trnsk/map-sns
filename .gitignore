@@ -24,5 +24,6 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+/frontend/src/common.js
 /api/.env
 !static.json
