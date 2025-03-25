@@ -102,7 +102,7 @@ export default function SignUp() {
                         </div>
                     ) : (
                         <button type="submit" disabled={isLoading}>
-                            ➜
+                            ➔
                         </button>
                     )}
                 </form>
