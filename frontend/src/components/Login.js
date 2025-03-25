@@ -40,10 +40,8 @@ export default function Login() {
                 throw new Error("Failed to login");
             }
             const data = await res.json();
-            console.log("login res:", data);
             setToken(data.token);
             const auth = await checkAuth();
-            console.log("login auth:", auth);
             setIsLoggedIn(auth);
 
             setEmail("");
@@ -96,7 +94,7 @@ export default function Login() {
                         </div>
                     ) : (
                         <button type="submit" disabled={isLoading}>
-                            ➜
+                            ➔
                         </button>
                     )}
                 </form>

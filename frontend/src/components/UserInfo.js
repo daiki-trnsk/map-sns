@@ -115,7 +115,6 @@ export default function UserInfo({ userData }) {
             return;
         }
         const updatedTopic = await res.json();
-        console.log(updatedTopic);
         setLikedTopics((prevTopics) =>
             prevTopics.map((topic) =>
                 topic.id === id

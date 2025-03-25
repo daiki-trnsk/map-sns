@@ -37,8 +37,6 @@ export default function Map({ posts, onAddPost, id }) {
         } else {
             setCurrentUserID(null);
         }
-        console.log("isloggedin", isLoggedIn);
-        console.log("cuurentuserid", currentUserID);
 
         if (posts) {
             setLocalTopics(posts);
@@ -102,7 +100,6 @@ export default function Map({ posts, onAddPost, id }) {
 
     const handleSaveClick = async (id, e) => {
         e.stopPropagation();
-        console.log(editedPost);
         editPost(id);
         setEditingPostId(null);
         setEditedPost(null);
@@ -133,7 +130,6 @@ export default function Map({ posts, onAddPost, id }) {
             return;
         }
         const updatedPost = await res.json();
-        console.log(updatedPost);
         setLocalTopics((prevPosts) =>
             prevPosts.map((post) =>
                 post.id === id
@@ -163,7 +159,6 @@ export default function Map({ posts, onAddPost, id }) {
                 localPosts.map((post) => {
                     const isCurrentUserPost = post.user_id === currentUserID;
                     const isLikedByUser = post.is_liked === true;
-                    console.log("isLikedByUser", isLikedByUser);
 
                     const circleClass = isCurrentUserPost
                         ? "circle-current-user"
@@ -184,8 +179,6 @@ export default function Map({ posts, onAddPost, id }) {
                         ? "post-title-liked-by-other"
                         : "post-title";
 
-                    // console.log(post.id, currentUserID);
-                    // console.log(isCurrentUserPost)
                     const htmlIcon = L.divIcon({
                         className: `custom-div-icon`,
                         html: `
@@ -227,100 +220,104 @@ export default function Map({ posts, onAddPost, id }) {
                                             {post.post_title}
                                         </h3>
                                     )}
-                                    {isCurrentUserPost ? (
-                                        editingPostId === post.id ? (
-                                            <div className="post-opt">
-                                                <button
-                                                    onClick={(e) =>
-                                                        handleCancelClick(e)
-                                                    }
-                                                >
-                                                    <img
-                                                        src={back}
-                                                        className="back-img"
-                                                    />
-                                                </button>
-                                                <button
-                                                    onClick={(e) =>
-                                                        handleSaveClick(
-                                                            post.id,
-                                                            e
-                                                        )
-                                                    }
-                                                >
-                                                    <img
-                                                        src={check}
-                                                        className="check-img"
-                                                    />
-                                                </button>
-                                            </div>
-                                        ) : (
-                                            <div className="post-opt">
-                                                <button
-                                                    onClick={(e) =>
-                                                        handleEditClick(post, e)
-                                                    }
-                                                >
-                                                    <img
-                                                        src={pen}
-                                                        className="pen-img"
-                                                    />
-                                                </button>
-                                                <button
-                                                    onClick={(e) =>
-                                                        handleDeleteClick(
-                                                            post.id,
-                                                            e
-                                                        )
-                                                    }
-                                                >
-                                                    <img
-                                                        src={garbage}
-                                                        className="garbage-img"
-                                                    />
-                                                </button>
-                                            </div>
-                                        )
-                                    ) : (
-                                        <div className="post-info">
-                                            <div className="post-crated">
-                                                <p>
-                                                    by {post.nickname}&emsp;
-                                                    {formatDateToYYYYMMDD(
-                                                        post.created_at
-                                                    )}
-                                                </p>
-                                            </div>
-                                            {isLoggedIn && (
-                                                <div className="post-like">
-                                                    <button
-                                                        onClick={(e) => {
-                                                            e.preventDefault();
-                                                            handleLikeClick(
-                                                                post.id,
-                                                                post.is_liked
-                                                            );
-                                                        }}
-                                                    >
-                                                        {post.is_liked ? (
-                                                            <img
-                                                                src={
-                                                                    heartFilled
-                                                                }
-                                                                className="heart-img"
-                                                            />
-                                                        ) : (
-                                                            <img
-                                                                src={heartNot}
-                                                                className="heart-img"
-                                                            />
-                                                        )}
-                                                    </button>
-                                                    <p>{post.like_count}</p>
-                                                </div>
-                                            )}
+                                    <div className="post-info">
+                                        <div className="post-crated">
+                                            <p>
+                                                {post.nickname && (
+                                                    <>
+                                                        by {post.nickname}&emsp;
+                                                    </>
+                                                )}
+                                                {formatDateToYYYYMMDD(
+                                                    post.created_at
+                                                )}
+                                            </p>
                                         </div>
-                                    )}
+                                        {isCurrentUserPost &&
+                                            (editingPostId === post.id ? (
+                                                <div className="post-opt">
+                                                    <button
+                                                        onClick={(e) =>
+                                                            handleCancelClick(e)
+                                                        }
+                                                    >
+                                                        <img
+                                                            src={back}
+                                                            className="back-img"
+                                                        />
+                                                    </button>
+                                                    <button
+                                                        onClick={(e) =>
+                                                            handleSaveClick(
+                                                                post.id,
+                                                                e
+                                                            )
+                                                        }
+                                                    >
+                                                        <img
+                                                            src={check}
+                                                            className="check-img"
+                                                        />
+                                                    </button>
+                                                </div>
+                                            ) : (
+                                                <div className="post-opt">
+                                                    <button
+                                                        onClick={(e) =>
+                                                            handleEditClick(
+                                                                post,
+                                                                e
+                                                            )
+                                                        }
+                                                    >
+                                                        <img
+                                                            src={pen}
+                                                            className="pen-img"
+                                                        />
+                                                    </button>
+                                                    <button
+                                                        onClick={(e) =>
+                                                            handleDeleteClick(
+                                                                post.id,
+                                                                e
+                                                            )
+                                                        }
+                                                    >
+                                                        <img
+                                                            src={garbage}
+                                                            className="garbage-img"
+                                                        />
+                                                    </button>
+                                                </div>
+                                            ))}
+
+                                        {isLoggedIn && (
+                                            <div className="post-like">
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.preventDefault();
+                                                        handleLikeClick(
+                                                            post.id,
+                                                            post.is_liked
+                                                        );
+                                                    }}
+                                                >
+                                                    {post.is_liked ? (
+                                                        <img
+                                                            src={heartFilled}
+                                                            className="heart-img"
+                                                        />
+                                                    ) : (
+                                                        <img
+                                                            src={heartNot}
+                                                            className="heart-img"
+                                                        />
+                                                    )}
+                                                </button>
+                                                <p>{post.like_count}</p>
+                                            </div>
+                                        )}
+                                    </div>
                                     <div className="popup-body">
                                         <img
                                             src={post.imageUrl}

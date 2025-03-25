@@ -42,7 +42,6 @@ export default function SignUp() {
                 throw new Error("Failed to sign up");
             }
             const data = await res.json();
-            console.log("user data:", data);
             setToken(data.token);
             setIsLoggedIn(data);
 
