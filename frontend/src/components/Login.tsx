@@ -37,7 +37,8 @@ export default function Login() {
                 body: JSON.stringify(userData),
             });
             if (!res.ok) {
-                throw new Error("Failed to login");
+                const errorData = await res.json();
+                throw new Error(errorData.error || "Failed to login");
             }
             const data = await res.json();
             setToken(data.token);
@@ -48,9 +49,9 @@ export default function Login() {
             setPassword("");
 
             navigate("/");
-        } catch (error) {
+        } catch (error: any) {
             console.error("error:", error);
-            alert("ログインに失敗しました");
+            alert(`ログインに失敗しました: ${error.message}`);
         } finally {
             setIsLoading(false);
         }
@@ -71,7 +72,7 @@ export default function Login() {
                         type="text"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        placeholder="メールアドレス"
+                        placeholder="E-mail"
                         maxLength={500}
                         required
                     />
@@ -80,7 +81,7 @@ export default function Login() {
                         type="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        placeholder="パスワード"
+                        placeholder="password"
                         maxLength={500}
                         required
                     />

@@ -13,13 +13,39 @@ export default function SignUp() {
     const [nickname, setNickname] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [passwordConfirm, setPasswordConfirm] = useState("");
     const [isLoading, setIsLoading] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        if (!nickname.trim() || !email.trim() || !password.trim()) {
+        if (
+            !nickname.trim() ||
+            !email.trim() ||
+            !password.trim() ||
+            !password.trim()
+        ) {
             alert("全ての項目を入力してください");
+            return;
+        }
+
+        const isValidEmail = (email: string) => {
+            const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return regex.test(email);
+        };
+
+        if (!isValidEmail(email)) {
+            alert("メールアドレスの形式が誤っています");
+            return;
+        }
+
+        if (password !== passwordConfirm) {
+            alert("パスワードが一致しません");
+            return;
+        }
+
+        if (password.length < 6) {
+            alert("パスワードは6文字以上で入力してください");
             return;
         }
 
@@ -39,7 +65,8 @@ export default function SignUp() {
                 body: JSON.stringify(userData),
             });
             if (!res.ok) {
-                throw new Error("Failed to sign up");
+                const errorData = await res.json();
+                throw new Error(errorData.error || "Failed to sign up");
             }
             const data = await res.json();
             setToken(data.token);
@@ -50,9 +77,9 @@ export default function SignUp() {
             setPassword("");
 
             navigate("/");
-        } catch (error) {
+        } catch (error: any) {
             console.error(error);
-            alert("サインアップに失敗しました");
+            alert(`サインアップに失敗しました: ${error.message}`);
         } finally {
             setIsLoading(false);
         }
@@ -88,7 +115,15 @@ export default function SignUp() {
                         type="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        placeholder="pasword"
+                        placeholder="password"
+                        maxLength={500}
+                        required
+                    />
+                    <input
+                        type="password"
+                        value={passwordConfirm}
+                        onChange={(e) => setPasswordConfirm(e.target.value)}
+                        placeholder="password (confirm)"
                         maxLength={500}
                         required
                     />
