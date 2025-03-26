@@ -4,6 +4,7 @@ import { getToken, removeToken } from "../utils/auth";
 import { API_HOST } from "../common";
 import { AuthContext } from "../context/AuthContext";
 import { formatDateToYYYYMMDDHHMM } from "../utils/format";
+import { UserData } from "../types/user";
 import pen from "../assets/pen.png";
 import garbage from "../assets/garbage.png";
 import account from "../assets/account.png";
@@ -14,13 +15,16 @@ import starGray from "../assets/starGray.png";
 import check from "../assets/check.png";
 import back from "../assets/back.png";
 
-export default function UserInfo({ userData }) {
+export default function UserInfo({ userData }: { userData: UserData }) {
     const navigate = useNavigate();
     const { isLoggedIn, setIsLoggedIn } = useContext(AuthContext);
     const [topics, setTopics] = useState(userData.topics);
     const [likedTopics, setLikedTopics] = useState(userData.liked_topics);
-    const [editingTopicId, setEditingTopicId] = useState(null);
-    const [editedTopic, setEditedTopic] = useState(null);
+    const [editingTopicId, setEditingTopicId] = useState<string | null>(null);
+    const [editedTopic, setEditedTopic] = useState<{
+        topic_title: string;
+        description: string;
+    } | null>(null);
     const [selectedList, setSelectedList] = useState("mine");
 
     useEffect(() => {
@@ -37,7 +41,7 @@ export default function UserInfo({ userData }) {
     }
     const user = userData.user;
 
-    const editTopic = async (id) => {
+    const editTopic = async (id: string) => {
         const res = await fetch(`${API_HOST}/topics/${id}`, {
             method: "PUT",
             headers: {
@@ -51,12 +55,12 @@ export default function UserInfo({ userData }) {
             return;
         }
         const updatedTopic = await res.json();
-        setTopics((prevTopics) =>
+        setTopics((prevTopics: Topic[]) =>
             prevTopics.map((topic) => (topic.id === id ? updatedTopic : topic))
         );
     };
 
-    const deleteTopic = async (id) => {
+    const deleteTopic = async (id: string) => {
         const res = await fetch(`${API_HOST}/topics/${id}`, {
             method: "DELETE",
             headers: {
@@ -67,12 +71,12 @@ export default function UserInfo({ userData }) {
             alert("削除に失敗しました");
             return;
         }
-        setTopics((prevTopics) =>
+        setTopics((prevTopics: Topic[]) =>
             prevTopics.filter((topic) => topic.id !== id)
         );
     };
 
-    const handleEditClick = (topic) => {
+    const handleEditClick = (topic: Topic) => {
         setEditingTopicId(topic.id);
         setEditedTopic({
             topic_title: topic.topic_title,
@@ -80,11 +84,11 @@ export default function UserInfo({ userData }) {
         });
     };
 
-    const handleDelClick = (id) => {
+    const handleDelClick = (id: string) => {
         deleteTopic(id);
     };
 
-    const handleSaveClick = (id) => {
+    const handleSaveClick = (id: string) => {
         editTopic(id);
         setEditingTopicId(null);
         setEditedTopic({ topic_title: "", description: "" });
@@ -97,11 +101,11 @@ export default function UserInfo({ userData }) {
 
     const handleLogout = () => {
         removeToken();
-        setIsLoggedIn(null);
+        setIsLoggedIn(false);
         navigate("/login");
     };
 
-    const handleLikeClick = async (id, isLiked) => {
+    const handleLikeClick = async (id: string, isLiked: boolean) => {
         const method = isLiked ? "DELETE" : "POST";
         const res = await fetch(`${API_HOST}/topics/${id}/like`, {
             method: `${method}`,
@@ -115,7 +119,7 @@ export default function UserInfo({ userData }) {
             return;
         }
         const updatedTopic = await res.json();
-        setLikedTopics((prevTopics) =>
+        setLikedTopics((prevTopics: any[]) =>
             prevTopics.map((topic) =>
                 topic.id === id
                     ? {
@@ -170,29 +174,30 @@ export default function UserInfo({ userData }) {
                 </div>
                 {selectedList === "mine" ? (
                     topics && topics.length > 0 ? (
-                        topics.map((topic) => (
+                        topics.map((topic: Topic) => (
                             <div key={topic.id} className="topic-item">
                                 {editingTopicId === topic.id ? (
                                     <div className="topic-item-content">
                                         <div className="topic-edit">
                                             <input
                                                 type="text"
-                                                value={editedTopic.topic_title}
+                                                value={
+                                                    editedTopic?.topic_title ||
+                                                    ""
+                                                }
                                                 onChange={(e) =>
                                                     setEditedTopic({
-                                                        ...editedTopic,
-                                                        topic_title:
-                                                            e.target.value,
+                                                        topic_title: e.target.value,
+                                                        description: editedTopic?.description || "",
                                                     })
                                                 }
                                             />
                                             <textarea
-                                                value={editedTopic.description}
+                                                value={editedTopic?.description || ""}
                                                 onChange={(e) =>
                                                     setEditedTopic({
-                                                        ...editedTopic,
-                                                        description:
-                                                            e.target.value,
+                                                        topic_title: editedTopic?.topic_title || "",
+                                                        description: e.target.value,
                                                     })
                                                 }
                                             />

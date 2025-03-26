@@ -22,17 +22,29 @@ import garbage from "../assets/garbage.png";
 import check from "../assets/check.png";
 import back from "../assets/back.png";
 import { formatDateToYYYYMMDD } from "../utils/format";
+import React from "react";
 
-export default function Map({ posts, onAddPost, id }) {
+interface MapProps {
+    posts: Post[];
+    onAddPost: (post: Post) => void;
+    id: string | undefined;
+}
+
+interface EditedPost {
+    post_title?: string;
+    description?: string;
+}
+
+export default function Map({ posts, onAddPost, id }: MapProps) {
     const { isLoggedIn, setIsLoggedIn } = useContext(AuthContext);
     const [localPosts, setLocalTopics] = useState(posts);
-    const [selectedPosition, setSelectedPosition] = useState(null);
-    const [editingPostId, setEditingPostId] = useState(null);
-    const [editedPost, setEditedPost] = useState(null);
-    const [currentUserID, setCurrentUserID] = useState(null);
+    const [selectedPosition, setSelectedPosition] = useState<{ lat: number; lng: number } | null>(null);
+    const [editingPostId, setEditingPostId] = useState<string | null>(null);
+    const [editedPost, setEditedPost] = useState<EditedPost | null>(null);
+    const [currentUserID, setCurrentUserID] = useState<string | null>(null);
 
     useEffect(() => {
-        if (isLoggedIn && isLoggedIn.user) {
+        if (isLoggedIn && typeof isLoggedIn !== "boolean" && isLoggedIn.user) {
             setCurrentUserID(isLoggedIn.user._id);
         } else {
             setCurrentUserID(null);
@@ -44,17 +56,15 @@ export default function Map({ posts, onAddPost, id }) {
     }, [isLoggedIn, posts]);
 
     function MapClickHandler() {
-        useMapEvent({
-            click(e) {
-                setSelectedPosition((prevPosition) =>
-                    prevPosition ? null : e.latlng
-                );
-            },
+        useMapEvent("click", (e: any) => {
+            setSelectedPosition((prevPosition) =>
+                prevPosition ? null : e.latlng
+            );
         });
         return null;
     }
 
-    const editPost = async (id) => {
+    const editPost = async (id: string) => {
         const res = await fetch(`${API_HOST}/posts/${id}`, {
             method: "PUT",
             headers: {
@@ -68,12 +78,13 @@ export default function Map({ posts, onAddPost, id }) {
             return;
         }
         const updatedPost = await res.json();
+        console.log(updatedPost);
         setLocalTopics((prevPosts) =>
             prevPosts.map((post) => (post.id === id ? updatedPost : post))
         );
     };
 
-    const deletePost = async (id) => {
+    const deletePost = async (id: string) => {
         const res = await fetch(`${API_HOST}/posts/${id}`, {
             method: "DELETE",
             headers: {
@@ -89,7 +100,7 @@ export default function Map({ posts, onAddPost, id }) {
         );
     };
 
-    const handleEditClick = (post, e) => {
+    const handleEditClick = (post: Post, e: React.MouseEvent<HTMLButtonElement> ) => {
         e.stopPropagation();
         setEditingPostId(post.id);
         setEditedPost({
@@ -98,25 +109,25 @@ export default function Map({ posts, onAddPost, id }) {
         });
     };
 
-    const handleSaveClick = async (id, e) => {
+    const handleSaveClick = async (id: string, e: React.MouseEvent<HTMLButtonElement>) => {
         e.stopPropagation();
         editPost(id);
         setEditingPostId(null);
         setEditedPost(null);
     };
 
-    const handleCancelClick = (e) => {
+    const handleCancelClick = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.stopPropagation();
         setEditingPostId(null);
         setEditedPost(null);
     };
 
-    const handleDeleteClick = (id, e) => {
-        e.stopPropagation();
-        deletePost(id);
-    };
+    const handleDeleteClick = (id: string, e: React.MouseEvent<HTMLButtonElement>) => {
+            e.stopPropagation();
+            deletePost(id);
+        };
 
-    const handleLikeClick = async (id, isLiked) => {
+    const handleLikeClick = async (id: string, isLiked: boolean) => {
         const method = isLiked ? "DELETE" : "POST";
         const res = await fetch(`${API_HOST}/posts/${id}/like`, {
             method: `${method}`,
@@ -207,7 +218,7 @@ export default function Map({ posts, onAddPost, id }) {
                                     {editingPostId === post.id ? (
                                         <input
                                             type="text"
-                                            value={editedPost.post_title}
+                                            value={editedPost?.post_title || ""}
                                             onChange={(e) =>
                                                 setEditedPost({
                                                     ...editedPost,
@@ -327,9 +338,8 @@ export default function Map({ posts, onAddPost, id }) {
                                             <div className="description">
                                                 {editingPostId === post.id ? (
                                                     <textarea
-                                                        type="text"
                                                         value={
-                                                            editedPost.description
+                                                            editedPost?.description || ""
                                                         }
                                                         onChange={(e) =>
                                                             setEditedPost({
@@ -370,7 +380,7 @@ export default function Map({ posts, onAddPost, id }) {
                 >
                     <Popup className="post-form-popup">
                         <PostForm
-                            id={id}
+                            id={id || ""}
                             lat={selectedPosition.lat}
                             lng={selectedPosition.lng}
                             onAddPost={onAddPost}
