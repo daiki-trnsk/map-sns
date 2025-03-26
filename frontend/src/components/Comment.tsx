@@ -5,11 +5,16 @@ import { getToken } from "../utils/auth";
 import { AuthContext } from "../context/AuthContext";
 import { formatDateToYYYYMMDDHHMM } from "../utils/format";
 
-export default function Comment({ id }) {
+interface CommentProps {
+    id: string;
+}
+
+export default function Comment({ id }: CommentProps) {
     const { isLoggedIn } = useContext(AuthContext);
-    const [commentList, setCommentList] = useState([]);
+
+    const [commentList, setCommentList] = useState<Comment[]>([]);
     const [comment, setComment] = useState("");
-    const commentBoxRef = useRef(null);
+    const commentBoxRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         fetch(`${API_HOST}/posts/${id}`)
@@ -24,7 +29,7 @@ export default function Comment({ id }) {
             .catch((err) => console.error("Error:", err));
     }, [id]);
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         if (!comment) {

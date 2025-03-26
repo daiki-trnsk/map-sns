@@ -5,6 +5,15 @@ import { v4 as uuidv4 } from "uuid";
 import { API_HOST } from "../common";
 import { getToken } from "../utils/auth";
 import { AuthContext } from "../context/AuthContext";
+import React from "react";
+
+interface PostFormProps {
+    id: string;
+    lat: number;
+    lng: number;
+    onAddPost: (post: any) => void;
+    setSelectedPosition: (position: { lat: number; lng: number } | null) => void;
+}
 
 export default function PostForm({
     id,
@@ -12,31 +21,40 @@ export default function PostForm({
     lng,
     onAddPost,
     setSelectedPosition,
-}) {
+}: PostFormProps) {
     const { isLoggedIn } = useContext(AuthContext);
     const [post_title, setTitle] = useState("");
     const [description, setDescription] = useState("");
-    const [image, setImage] = useState(null);
-    const [preview, setPreview] = useState(null);
+    const [image, setImage] = useState<File | null>(null);
+    const [preview, setPreview] = useState<string | null>(null);
     const [uploading, setUploading] = useState(false);
-    const fileInputRef = useRef(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const handleImageChange = (e) => {
-        const file = e.target.files[0];
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = (e.target as HTMLInputElement).files?.[0];
         if (file) {
             setImage(file);
             setPreview(URL.createObjectURL(file));
         }
     };
 
-    const compressImage = async (file, quality, maxWidth, maxHeight) => {
+    const compressImage = async (
+        file: Blob,
+        quality: number,
+        maxWidth: number,
+        maxHeight: number
+    ): Promise<File> => {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.readAsDataURL(file);
 
             reader.onload = (event) => {
                 const img = new Image();
-                img.src = event.target.result;
+                if (event.target) {
+                    img.src = (event.target as FileReader).result as string;
+                } else {
+                    reject(new Error("Failed to read file"));
+                }
 
                 img.onload = () => {
                     const canvas = document.createElement("canvas");
@@ -56,13 +74,17 @@ export default function PostForm({
                     canvas.height = height;
 
                     const ctx = canvas.getContext("2d");
-                    ctx.drawImage(img, 0, 0, width, height);
+                    if (ctx) {
+                        ctx.drawImage(img, 0, 0, width, height);
+                    } else {
+                        reject(new Error("Failed to get canvas context"));
+                    }
 
                     canvas.toBlob(
                         (blob) => {
                             if (blob) {
                                 resolve(
-                                    new File([blob], file.name, {
+                                    new File([blob], (file as File).name, {
                                         type: "image/jpeg",
                                         lastModified: Date.now(),
                                     })
@@ -108,7 +130,7 @@ export default function PostForm({
         return responseUrl;
     };
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setUploading(true);
 
@@ -152,7 +174,7 @@ export default function PostForm({
             {isLoggedIn ? (
                 <form onSubmit={handleSubmit} className="post-form">
                     <input
-                    className="post-form-title"
+                        className="post-form-title"
                         type="text"
                         value={post_title}
                         onChange={(e) => setTitle(e.target.value)}
@@ -161,7 +183,7 @@ export default function PostForm({
                         required
                     />
                     <textarea
-                    className="post-form-description"
+                        className="post-form-description"
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
                         placeholder="説明"
@@ -176,7 +198,7 @@ export default function PostForm({
                     />
                     {preview && (
                         <img
-                        className="post-form-img"
+                            className="post-form-img"
                             src={preview}
                             alt="プレビュー"
                             style={{
@@ -187,10 +209,7 @@ export default function PostForm({
                             }}
                         />
                     )}
-                    <button
-                        type="submit"
-                        disabled={uploading}
-                    >
+                    <button type="submit" disabled={uploading}>
                         {uploading ? "アップロード中..." : "投稿"}
                     </button>
                 </form>

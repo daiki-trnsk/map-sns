@@ -5,10 +5,11 @@ import { API_HOST } from "../common";
 import Footer from "../components/UI/Footer";
 import Header from "../components/UI/Header";
 import { getToken } from "../utils/auth";
+import React from "react";
 
 export default function TopicDetail() {
     const { id } = useParams();
-    const [posts, setPosts] = useState([]);
+    const [posts, setPosts] = useState<any[]>([]);
 
     useEffect(() => {
         const token = getToken();
@@ -25,7 +26,7 @@ export default function TopicDetail() {
             .catch((err) => console.error("Error:", err));
     }, [id]);
 
-    const handleAddPost = (newPost) => {
+    const handleAddPost = (newPost: any) => {
         setPosts((prevPosts) => [...(prevPosts || []), newPost]);
     };
 

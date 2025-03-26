@@ -4,13 +4,14 @@ import { API_HOST } from "../common";
 import { getToken } from "../utils/auth";
 import { AuthContext } from "../context/AuthContext";
 import { formatDateToYYYYMMDDHHMM } from "../utils/format";
+// import { Topic } from "../types/topic";
 import search from "../assets/search.png";
 import starFrame from "../assets/starFrame.png";
 import starYellow from "../assets/starYellow.png";
 
 export default function TopicList() {
     const { isLoggedIn, setIsLoggedIn } = useContext(AuthContext);
-    const [topics, setTopics] = useState([]);
+    const [topics, setTopics] = useState<Topic[]>([]);
     const [searchValue, setSearchValue] = useState("");
 
     const fetchTopics = async () => {
@@ -38,12 +39,14 @@ export default function TopicList() {
         fetchTopics();
     }, [searchValue]);
 
-    const handleSearchSubmit = (e) => {
+    const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        setSearchValue(e.target.elements[0].value);
+        const form = e.target as HTMLFormElement;
+        const searchValue = (form.elements[0] as HTMLInputElement).value;
+        setSearchValue(searchValue);
     };
 
-    const handleLikeClick = async (id, isLiked) => {
+    const handleLikeClick = async (id: string, isLiked: boolean) => {
         const method = isLiked ? "DELETE" : "POST";
         const res = await fetch(`${API_HOST}/topics/${id}/like`, {
             method: `${method}`,
@@ -103,26 +106,32 @@ export default function TopicList() {
                                     {formatDateToYYYYMMDDHHMM(topic.created_at)}
                                 </p>
                             </div>
-                                {isLoggedIn && (
-                                    <div className="topic-item-info-likes">
-                                        <button
-                                            onClick={(e) => {
-                                                e.preventDefault();
-                                                handleLikeClick(
-                                                    topic.id,
-                                                    topic.is_liked
-                                                );
-                                            }}
-                                        >
-                                            {topic.is_liked ? (
-                                                <img src={starYellow} className="star-img" />
-                                            ) : (
-                                                <img src={starFrame} className="star-img" />
-                                            )}
-                                        </button>
-                                        <p>{topic.like_count}</p>
-                                    </div>
-                                )}
+                            {isLoggedIn && (
+                                <div className="topic-item-info-likes">
+                                    <button
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            handleLikeClick(
+                                                topic.id,
+                                                topic.is_liked
+                                            );
+                                        }}
+                                    >
+                                        {topic.is_liked ? (
+                                            <img
+                                                src={starYellow}
+                                                className="star-img"
+                                            />
+                                        ) : (
+                                            <img
+                                                src={starFrame}
+                                                className="star-img"
+                                            />
+                                        )}
+                                    </button>
+                                    <p>{topic.like_count}</p>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </Link>

@@ -1,4 +1,4 @@
-export const formatDateToYYYYMMDDHHMM = (dateString) => {
+export const formatDateToYYYYMMDDHHMM = (dateString: string | number | Date) => {
     const date = new Date(dateString);
 
     const jstDate = new Date(
@@ -14,7 +14,7 @@ export const formatDateToYYYYMMDDHHMM = (dateString) => {
     return `${year}/${month}/${day} ${hours}:${minutes}`;
 };
 
-export const formatDateToYYYYMMDD = (dateString) => {
+export const formatDateToYYYYMMDD = (dateString: string | number | Date) => {
     const date = new Date(dateString);
 
     const jstDate = new Date(

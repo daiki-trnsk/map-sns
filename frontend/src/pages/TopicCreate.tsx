@@ -11,7 +11,7 @@ export default function TopicCreate() {
     const [topicTitle, setTopicTitle] = useState("");
     const [description, setDescription] = useState("");
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async (e: { preventDefault: () => void; }) => {
         e.preventDefault();
 
         if (!topicTitle.trim() || !description.trim()) {
@@ -56,7 +56,6 @@ export default function TopicCreate() {
                     <form onSubmit={handleSubmit} className="topic-form">
                         <input
                             className="topic-form-title"
-                            type="text"
                             value={topicTitle}
                             onChange={(e) => setTopicTitle(e.target.value)}
                             placeholder="トピックのタイトル"
@@ -65,7 +64,6 @@ export default function TopicCreate() {
                         />
                         <textarea
                             className="topic-form-description"
-                            type="text"
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
                             placeholder="トピックの説明"

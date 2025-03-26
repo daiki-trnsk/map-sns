@@ -62,30 +62,39 @@ func (app *Application) GetPostList(c echo.Context) error {
 	return c.JSON(http.StatusOK, postlistWithUserInfo)
 }
 
-// ピン作成者のニックネーム取得
+// ポストリストの諸情報取得
 func getUserNameForPosts(posts []models.Post, userID string) ([]PostWithUserInfo, error) {
 	var postsWithUserName []PostWithUserInfo
 	for _, post := range posts {
-		// ピン作成者のニックネーム取得
-		nickName, err := repositories.GetUserNameByID(post.UserID)
+		postWithUserInfo, err := getUserNameForPost(post, userID)
 		if err != nil {
 			return nil, err
 		}
-		// クライアントがいいねしているか
-		isLiked := false
-		if userID != "" {
-			if contains(post.LikedUsers, userID) {
-				isLiked = true
-			}
-		}
-
-		postsWithUserName = append(postsWithUserName, PostWithUserInfo{
-            Post:    post,
-            NickName: nickName,
-			IsLiked:  isLiked,
-        })
+		postsWithUserName = append(postsWithUserName, postWithUserInfo)
 	}
 	return postsWithUserName, nil
+}
+
+// ポストの諸情報取得
+func getUserNameForPost(post models.Post, userID string) (PostWithUserInfo, error) {
+	// ピン作成者のニックネーム取得
+	nickName, err := repositories.GetUserNameByID(post.UserID)
+	if err != nil {
+		return PostWithUserInfo{}, err
+	}
+	// クライアントがいいねしているか
+	isLiked := false
+	if userID != "" {
+		if contains(post.LikedUsers, userID) {
+			isLiked = true
+		}
+	}
+
+	return PostWithUserInfo{
+		Post:    post,
+		NickName: nickName,
+		IsLiked:  isLiked,
+	}, nil
 }
 
 // ポストの作成
@@ -150,7 +159,13 @@ func (app *Application) EditPost(c echo.Context) error {
 		}
 		return errorResponse(c, http.StatusInternalServerError, "Failed to update post")
 	}
-	return c.JSON(http.StatusOK, post)
+
+	postlistWithUserInfo, err := getUserNameForPost(post, currentUserID)
+	if err != nil {
+		return errorResponse(c, http.StatusInternalServerError, "Failed to get user names")
+	}
+
+	return c.JSON(http.StatusOK, postlistWithUserInfo)
 }
 
 // ポストの削除

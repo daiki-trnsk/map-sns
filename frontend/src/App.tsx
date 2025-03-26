@@ -6,6 +6,7 @@ import Auth from "./pages/Auth";
 import Register from "./pages/Register";
 import User from "./pages/User";
 import TopicCreate from "./pages/TopicCreate";
+import React from "react";
 
 function App() {
     return (

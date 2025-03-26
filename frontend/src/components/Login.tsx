@@ -1,37 +1,35 @@
 import React, { useState, useContext } from "react";
 import { API_HOST } from "../common";
-import { Link, useNavigate } from "react-router-dom";
 import { setToken } from "../utils/auth";
+import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import logo from "../assets/logo.png";
 
-export default function SignUp() {
-    const { setIsLoggedIn } = useContext(AuthContext);
+export default function Login() {
+    const { setIsLoggedIn, checkAuth } = useContext(AuthContext);
 
     const navigate = useNavigate();
 
-    const [nickname, setNickname] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [isLoading, setIsLoading] = useState(false);
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        if (!nickname.trim() || !email.trim() || !password.trim()) {
-            alert("全ての項目を入力してください");
+        if (!email.trim() || !password.trim()) {
+            alert("タイトルと説明を入力してください！");
             return;
         }
 
         setIsLoading(true);
 
         const userData = {
-            nickname: nickname,
             email: email,
             password: password,
         };
         try {
-            const res = await fetch(`${API_HOST}/signup`, {
+            const res = await fetch(`${API_HOST}/login`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -39,20 +37,20 @@ export default function SignUp() {
                 body: JSON.stringify(userData),
             });
             if (!res.ok) {
-                throw new Error("Failed to sign up");
+                throw new Error("Failed to login");
             }
             const data = await res.json();
             setToken(data.token);
-            setIsLoggedIn(data);
+            const auth = await checkAuth();
+            setIsLoggedIn(auth);
 
-            setNickname("");
             setEmail("");
             setPassword("");
 
             navigate("/");
         } catch (error) {
-            console.error(error);
-            alert("サインアップに失敗しました");
+            console.error("error:", error);
+            alert("ログインに失敗しました");
         } finally {
             setIsLoading(false);
         }
@@ -61,44 +59,38 @@ export default function SignUp() {
     return (
         <div className="auth-container">
             <div className="auth-form">
-                <div className="auth-logo">
-                    <img src={logo} alt="logo" className="logo-img" />
-                </div>
                 <div className="auth-info">
+                    <div className="auth-logo">
+                        <img src={logo} alt="logo" className="logo-img" />
+                    </div>
                     <p>お気に入りの場所をシェアしよう</p>
                 </div>
                 <form onSubmit={handleSubmit} className="login-form">
                     <input
-                        type="text"
-                        value={nickname}
-                        onChange={(e) => setNickname(e.target.value)}
-                        placeholder="nickname"
-                        maxLength={500}
-                        required
-                    />
-                    <input
+                        className="email-input"
                         type="text"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        placeholder="E-mail"
+                        placeholder="メールアドレス"
                         maxLength={500}
                         required
                     />
                     <input
+                        className="pwd-input"
                         type="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        placeholder="pasword"
+                        placeholder="パスワード"
                         maxLength={500}
                         required
                     />
-                    <Link to={"/login"} className="register-link">
-                        Login
+                    <Link to={"/register"} className="register-link">
+                        Sign Up
                     </Link>
 
                     {isLoading ? (
-                        <div class="spinner-box">
-                            <div class="three-quarter-spinner"></div>
+                        <div className="spinner-box">
+                            <div className="three-quarter-spinner"></div>
                         </div>
                     ) : (
                         <button type="submit" disabled={isLoading}>
