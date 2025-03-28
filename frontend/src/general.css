@@ -190,17 +190,17 @@ input[type="text"]:focus {
   border-color: #f703ff;
   outline: none;
 } */
-
+/* 
 button {
-  /* padding: 10px 15px;
+  padding: 10px 15px;
   background: #f703ff;
   color: white;
   border: none;
   border-radius: 6px;
   cursor: pointer;
-  font-weight: bold; */
-  /* transition: background 0.3s; */
-}
+  font-weight: bold;
+  transition: background 0.3s;
+} */
 
 /* button:hover {
   background: #f703ff;
