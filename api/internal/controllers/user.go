@@ -19,7 +19,6 @@ type UserDataResponse struct {
 }
 
 // ユーザー情報、ユーザーの投稿取得
-// いいね実装後、いいねした投稿一覧の取得ここで実装
 // あとで処理ごとに関数分ける
 func (app *Application) GetUserData(c echo.Context) error {
 	currentUserID := c.Get("uid").(string)
