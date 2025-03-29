@@ -49,6 +49,7 @@ export default function Map({ posts, onAddPost, id }: MapProps) {
     const [editedPost, setEditedPost] = useState<EditedPost | null>(null);
     const [currentUserID, setCurrentUserID] = useState<string | null>(null);
     const [selectedPost, setSelectedPost] = useState<Post | null>(null);
+    const [isClosing, setIsClosing] = useState(false);
 
     useEffect(() => {
         if (isLoggedIn && typeof isLoggedIn !== "boolean" && isLoggedIn.user) {
@@ -67,9 +68,23 @@ export default function Map({ posts, onAddPost, id }: MapProps) {
             setSelectedPosition((prevPosition) =>
                 prevPosition ? null : e.latlng
             );
+            if (selectedPost) {
+                handleClose();
+            }
         });
         return null;
     }
+
+    const handleClose = () => {
+        console.log("truing")
+        setIsClosing(true);
+        setSelectedPosition(null);
+        setTimeout(() => {
+            setSelectedPost(null);
+            console.log("falsing")
+            setIsClosing(false);
+          }, 300);
+    };
 
     const editPost = async (id: string) => {
         const res = await fetch(`${API_HOST}/posts/${id}`, {
@@ -236,7 +251,8 @@ export default function Map({ posts, onAddPost, id }: MapProps) {
                                 },
                             }}
                         >
-                            {isDesktop && (
+                            {/* {isDesktop && ( */}
+                            {false && (
                                 <Popup
                                     offset={[0, -85]}
                                     className="post-detail-popup"
@@ -415,8 +431,8 @@ export default function Map({ posts, onAddPost, id }: MapProps) {
                     投稿がありません
                 </p>
             )}
-            {isMobile && (
-                <div className={`bottom-sheet ${selectedPost ? "active" : ""}`}>
+            {true && (
+                <div className={`bottom-sheet ${selectedPost ? (isClosing ? "closing" : "active") : ""}`}>
                     {selectedPost && (
                         <MobileDetail
                             post={selectedPost}
