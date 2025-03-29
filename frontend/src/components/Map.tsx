@@ -21,6 +21,7 @@ import pen from "../assets/pen.png";
 import garbage from "../assets/garbage.png";
 import check from "../assets/check.png";
 import back from "../assets/back.png";
+import heartGray from "../assets/heartGray.png";
 import { formatDateToYYYYMMDD } from "../utils/format";
 import React from "react";
 
@@ -302,7 +303,7 @@ export default function Map({ posts, onAddPost, id }: MapProps) {
                                                 </div>
                                             ))}
 
-                                        {isLoggedIn && (
+                                        {isLoggedIn ? (
                                             <div className="post-like">
                                                 <button
                                                     onClick={(e) => {
@@ -325,6 +326,14 @@ export default function Map({ posts, onAddPost, id }: MapProps) {
                                                         />
                                                     )}
                                                 </button>
+                                                <p>{post.like_count}</p>
+                                            </div>
+                                        ) :(
+                                            <div className="post-like">
+                                                <img
+                                                    src={heartGray}
+                                                    className="heart-gray-img"
+                                                />
                                                 <p>{post.like_count}</p>
                                             </div>
                                         )}

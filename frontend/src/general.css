@@ -757,6 +757,12 @@ details[open] summary::before {
   height: auto;
 }
 
+.heart-gray-img {
+  width: 20px;
+  height: 20px !important;
+  margin: auto;
+}
+
 .topic-buttons {
   display: flex;
   justify-content: flex-end;

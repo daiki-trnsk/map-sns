@@ -2,12 +2,12 @@ package token
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
 	"time"
 
 	"github.com/daiki-trnsk/map-sns/pkg/database"
-
 
 	jwt "github.com/dgrijalva/jwt-go"
 	"go.mongodb.org/mongo-driver/bson"
@@ -72,6 +72,7 @@ func ValidateToken(signedtoken string) (claims *SignedDetails, msg string) {
 	}
 	if claims.ExpiresAt < time.Now().Local().Unix() {
 		msg = "token is expired"
+		fmt.Println("token is expired")
 		return
 	}
 	return claims, msg

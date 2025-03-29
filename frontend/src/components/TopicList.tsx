@@ -8,6 +8,7 @@ import { formatDateToYYYYMMDDHHMM } from "../utils/format";
 import search from "../assets/search.png";
 import starFrame from "../assets/starFrame.png";
 import starYellow from "../assets/starYellow.png";
+import starGray from "../assets/starGray.png";
 
 export default function TopicList() {
     const { isLoggedIn, setIsLoggedIn } = useContext(AuthContext);
@@ -106,7 +107,7 @@ export default function TopicList() {
                                     {formatDateToYYYYMMDDHHMM(topic.created_at)}
                                 </p>
                             </div>
-                            {isLoggedIn && (
+                            {isLoggedIn ? (
                                 <div className="topic-item-info-likes">
                                     <button
                                         onClick={(e) => {
@@ -129,6 +130,11 @@ export default function TopicList() {
                                             />
                                         )}
                                     </button>
+                                    <p>{topic.like_count}</p>
+                                </div>
+                            ) : (
+                                <div className="topic-item-info-likes">
+                                    <img src={starGray} className="star-img" />
                                     <p>{topic.like_count}</p>
                                 </div>
                             )}
