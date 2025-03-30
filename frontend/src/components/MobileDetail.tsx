@@ -14,6 +14,7 @@ import heartGray from "../assets/heartGray.png";
 import { formatDateToYYYYMMDD } from "../utils/format";
 import React from "react";
 import { UserData } from "../types/user";
+import close from "../assets/close.png";
 
 interface EditedPost {
     post_title?: string;
@@ -22,6 +23,7 @@ interface EditedPost {
 
 interface MobileDetailProps {
     post: Post;
+    handleClose: () => void;
     handleLikeClick: (id: string, isLiked: boolean) => void;
     handleEditClick: (
         post: Post,
@@ -46,6 +48,7 @@ interface MobileDetailProps {
 
 const MobileDetail: React.FC<MobileDetailProps> = ({
     post,
+    handleClose,
     handleLikeClick,
     handleEditClick,
     handleDeleteClick,
@@ -60,7 +63,11 @@ const MobileDetail: React.FC<MobileDetailProps> = ({
 }) => {
     return (
         <>
-            <button className="mobile-button">Toggle Bottom Sheet</button>
+            <div className="bottom-sheet-header">
+                <button className="mobile-button" onClick={handleClose}>
+                    <img src={close} className="close-img" />
+                </button>
+            </div>
             <div className="popup-content">
                 {editingPostId === post.id ? (
                     <input

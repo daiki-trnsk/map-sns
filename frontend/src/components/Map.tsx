@@ -477,6 +477,7 @@ export default function Map({ posts, onAddPost, id }: MapProps) {
                     {selectedPost && (
                         <MobileDetail
                             post={selectedPost}
+                            handleClose={handleClose}
                             handleLikeClick={handleLikeClick}
                             handleEditClick={handleEditClick}
                             handleDeleteClick={handleDeleteClick}
