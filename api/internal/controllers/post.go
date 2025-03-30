@@ -241,5 +241,11 @@ func (app *Application) LikePost(c echo.Context) error {
 	if err != nil {
 		return errorResponse(c, http.StatusInternalServerError, "Failed to update topic")
 	}
-	return c.JSON(http.StatusOK, post)
+
+	postlistWithUserInfo, err := getUserNameForPost(post, currentUserID)
+	if err != nil {
+		return errorResponse(c, http.StatusInternalServerError, "Failed to get user names")
+	}
+
+	return c.JSON(http.StatusOK, postlistWithUserInfo)
 }

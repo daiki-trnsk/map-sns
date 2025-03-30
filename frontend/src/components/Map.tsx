@@ -75,15 +75,26 @@ export default function Map({ posts, onAddPost, id }: MapProps) {
         return null;
     }
 
+    const updateLocalPost = (updatedPost: Post) => {
+        setLocalTopics((prevPosts) =>
+            prevPosts.map((post) =>
+                post.id === updatedPost.id ? updatedPost : post
+            )
+        );
+        if (selectedPost?.id === updatedPost.id) {
+            setSelectedPost(updatedPost);
+        }
+    };
+
     const handleClose = () => {
-        console.log("truing")
+        console.log("truing");
         setIsClosing(true);
         setSelectedPosition(null);
         setTimeout(() => {
             setSelectedPost(null);
-            console.log("falsing")
+            console.log("falsing");
             setIsClosing(false);
-          }, 300);
+        }, 300);
     };
 
     const editPost = async (id: string) => {
@@ -100,10 +111,7 @@ export default function Map({ posts, onAddPost, id }: MapProps) {
             return;
         }
         const updatedPost = await res.json();
-        console.log(updatedPost);
-        setLocalTopics((prevPosts) =>
-            prevPosts.map((post) => (post.id === id ? updatedPost : post))
-        );
+        updateLocalPost(updatedPost);
     };
 
     const deletePost = async (id: string) => {
@@ -156,6 +164,7 @@ export default function Map({ posts, onAddPost, id }: MapProps) {
     ) => {
         e.stopPropagation();
         deletePost(id);
+        handleClose();
     };
 
     const handleLikeClick = async (id: string, isLiked: boolean) => {
@@ -172,58 +181,48 @@ export default function Map({ posts, onAddPost, id }: MapProps) {
             return;
         }
         const updatedPost = await res.json();
-        setLocalTopics((prevPosts) =>
-            prevPosts.map((post) =>
-                post.id === id
-                    ? {
-                          ...post,
-                          is_liked: !isLiked,
-                          like_count: isLiked
-                              ? post.like_count - 1
-                              : post.like_count + 1,
-                      }
-                    : post
-            )
-        );
+        updateLocalPost(updatedPost);
     };
 
     return (
-        <MapContainer
-            center={[37, 138]}
-            zoom={6}
-            zoomControl={false}
-            style={{ height: "100vh", width: "100%" }}
-        >
-            <TileLayer url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png" />
-            <MapClickHandler />
+        <>
+            <MapContainer
+                center={[37, 138]}
+                zoom={6}
+                zoomControl={false}
+                style={{ height: "100vh", width: "100%" }}
+            >
+                <TileLayer url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png" />
+                <MapClickHandler />
 
-            {Array.isArray(localPosts) && localPosts.length > 0 ? (
-                localPosts.map((post) => {
-                    const isCurrentUserPost = post.user_id === currentUserID;
-                    const isLikedByUser = post.is_liked === true;
+                {Array.isArray(localPosts) && localPosts.length > 0 ? (
+                    localPosts.map((post) => {
+                        const isCurrentUserPost =
+                            post.user_id === currentUserID;
+                        const isLikedByUser = post.is_liked === true;
 
-                    const circleClass = isCurrentUserPost
-                        ? "circle-current-user"
-                        : isLikedByUser
-                        ? "circle-liked-by-other"
-                        : "circle";
+                        const circleClass = isCurrentUserPost
+                            ? "circle-current-user"
+                            : isLikedByUser
+                            ? "circle-liked-by-other"
+                            : "circle";
 
-                    const triangleClass = isCurrentUserPost
-                        ? "triangle-current-user"
-                        : isLikedByUser
-                        ? "triangle-liked-by-other"
-                        : "triangle";
+                        const triangleClass = isCurrentUserPost
+                            ? "triangle-current-user"
+                            : isLikedByUser
+                            ? "triangle-liked-by-other"
+                            : "triangle";
 
-                    // タイトルの場合のクラス名
-                    const titleClass = isCurrentUserPost
-                        ? "post-title-current-user"
-                        : isLikedByUser
-                        ? "post-title-liked-by-other"
-                        : "post-title";
+                        // タイトルの場合のクラス名
+                        const titleClass = isCurrentUserPost
+                            ? "post-title-current-user"
+                            : isLikedByUser
+                            ? "post-title-liked-by-other"
+                            : "post-title";
 
-                    const htmlIcon = L.divIcon({
-                        className: `custom-div-icon`,
-                        html: `
+                        const htmlIcon = L.divIcon({
+                            className: `custom-div-icon`,
+                            html: `
               <div class="map-thumbnail">
                 <div class=${circleClass}></div>
                 <img src="${post.imageUrl}"/>
@@ -231,208 +230,250 @@ export default function Map({ posts, onAddPost, id }: MapProps) {
                 <div class="${titleClass}"><p>${post.post_title}</p><div>
               </div>
             `,
-                        iconSize: [60, 60],
-                        iconAnchor: [40, 96],
-                    });
+                            iconSize: [60, 60],
+                            iconAnchor: [40, 96],
+                        });
 
-                    return (
-                        <Marker
-                            key={post.id}
-                            position={[post.location.lat, post.location.lng]}
-                            icon={htmlIcon}
-                            eventHandlers={{
-                                click: () => {
-                                    setSelectedPost(post);
-                                    console.log("click", selectedPost);
-                                },
-                                popupclose: () => {
-                                    setSelectedPost(null);
-                                    console.log("close", selectedPost);
-                                },
-                            }}
-                        >
-                            {/* {isDesktop && ( */}
-                            {false && (
-                                <Popup
-                                    offset={[0, -85]}
-                                    className="post-detail-popup"
-                                >
-                                    <div className="popup-content">
-                                        {editingPostId === post.id ? (
-                                            <input
-                                                type="text"
-                                                value={
-                                                    editedPost?.post_title || ""
-                                                }
-                                                onChange={(e) =>
-                                                    setEditedPost({
-                                                        ...editedPost,
-                                                        post_title:
-                                                            e.target.value,
-                                                    })
-                                                }
-                                            />
-                                        ) : (
-                                            <h3 className="popup-title">
-                                                {post.post_title}
-                                            </h3>
-                                        )}
-                                        <div className="post-info">
-                                            <div className="post-crated">
-                                                <p>
-                                                    {post.nickname && (
-                                                        <>
-                                                            by {post.nickname}
-                                                            &emsp;
-                                                        </>
-                                                    )}
-                                                    {formatDateToYYYYMMDD(
-                                                        post.created_at
-                                                    )}
-                                                </p>
-                                            </div>
-                                            {isCurrentUserPost &&
-                                                (editingPostId === post.id ? (
-                                                    <div className="post-opt">
+                        return (
+                            <Marker
+                                key={post.id}
+                                position={[
+                                    post.location.lat,
+                                    post.location.lng,
+                                ]}
+                                icon={htmlIcon}
+                                eventHandlers={{
+                                    click: () => {
+                                        setSelectedPost(post);
+                                        // console.log("click", selectedPost);
+                                    },
+                                    popupclose: () => {
+                                        setSelectedPost(null);
+                                        // console.log("close", selectedPost);
+                                    },
+                                }}
+                            >
+                                {/* {isDesktop && ( */}
+                                {false && (
+                                    <Popup
+                                        offset={[0, -85]}
+                                        className="post-detail-popup"
+                                    >
+                                        <div className="popup-content">
+                                            {editingPostId === post.id ? (
+                                                <input
+                                                    type="text"
+                                                    value={
+                                                        editedPost?.post_title ||
+                                                        ""
+                                                    }
+                                                    onChange={(e) =>
+                                                        setEditedPost({
+                                                            ...editedPost,
+                                                            post_title:
+                                                                e.target.value,
+                                                        })
+                                                    }
+                                                />
+                                            ) : (
+                                                <h3 className="popup-title">
+                                                    {post.post_title}
+                                                </h3>
+                                            )}
+                                            <div className="post-info">
+                                                <div className="post-crated">
+                                                    <p>
+                                                        {post.nickname && (
+                                                            <>
+                                                                by{" "}
+                                                                {post.nickname}
+                                                                &emsp;
+                                                            </>
+                                                        )}
+                                                        {formatDateToYYYYMMDD(
+                                                            post.created_at
+                                                        )}
+                                                    </p>
+                                                </div>
+                                                {isCurrentUserPost &&
+                                                    (editingPostId ===
+                                                    post.id ? (
+                                                        <div className="post-opt">
+                                                            <button
+                                                                onClick={(e) =>
+                                                                    handleCancelClick(
+                                                                        e
+                                                                    )
+                                                                }
+                                                            >
+                                                                <img
+                                                                    src={back}
+                                                                    className="back-img"
+                                                                />
+                                                            </button>
+                                                            <button
+                                                                onClick={(e) =>
+                                                                    handleSaveClick(
+                                                                        post.id,
+                                                                        e
+                                                                    )
+                                                                }
+                                                            >
+                                                                <img
+                                                                    src={check}
+                                                                    className="check-img"
+                                                                />
+                                                            </button>
+                                                        </div>
+                                                    ) : (
+                                                        <div className="post-opt">
+                                                            <button
+                                                                onClick={(e) =>
+                                                                    handleEditClick(
+                                                                        post,
+                                                                        e
+                                                                    )
+                                                                }
+                                                            >
+                                                                <img
+                                                                    src={pen}
+                                                                    className="pen-img"
+                                                                />
+                                                            </button>
+                                                            <button
+                                                                onClick={(e) =>
+                                                                    handleDeleteClick(
+                                                                        post.id,
+                                                                        e
+                                                                    )
+                                                                }
+                                                            >
+                                                                <img
+                                                                    src={
+                                                                        garbage
+                                                                    }
+                                                                    className="garbage-img"
+                                                                />
+                                                            </button>
+                                                        </div>
+                                                    ))}
+
+                                                {isLoggedIn ? (
+                                                    <div className="post-like">
                                                         <button
-                                                            onClick={(e) =>
-                                                                handleCancelClick(
-                                                                    e
-                                                                )
-                                                            }
-                                                        >
-                                                            <img
-                                                                src={back}
-                                                                className="back-img"
-                                                            />
-                                                        </button>
-                                                        <button
-                                                            onClick={(e) =>
-                                                                handleSaveClick(
+                                                            onClick={(e) => {
+                                                                e.preventDefault();
+                                                                handleLikeClick(
                                                                     post.id,
-                                                                    e
-                                                                )
-                                                            }
+                                                                    post.is_liked
+                                                                );
+                                                            }}
                                                         >
-                                                            <img
-                                                                src={check}
-                                                                className="check-img"
-                                                            />
+                                                            {post.is_liked ? (
+                                                                <img
+                                                                    src={
+                                                                        heartFilled
+                                                                    }
+                                                                    className="heart-img"
+                                                                />
+                                                            ) : (
+                                                                <img
+                                                                    src={
+                                                                        heartNot
+                                                                    }
+                                                                    className="heart-img"
+                                                                />
+                                                            )}
                                                         </button>
+                                                        <p>{post.like_count}</p>
                                                     </div>
                                                 ) : (
-                                                    <div className="post-opt">
-                                                        <button
-                                                            onClick={(e) =>
-                                                                handleEditClick(
-                                                                    post,
-                                                                    e
-                                                                )
-                                                            }
-                                                        >
-                                                            <img
-                                                                src={pen}
-                                                                className="pen-img"
-                                                            />
-                                                        </button>
-                                                        <button
-                                                            onClick={(e) =>
-                                                                handleDeleteClick(
-                                                                    post.id,
-                                                                    e
-                                                                )
-                                                            }
-                                                        >
-                                                            <img
-                                                                src={garbage}
-                                                                className="garbage-img"
-                                                            />
-                                                        </button>
+                                                    <div className="post-like">
+                                                        <img
+                                                            src={heartGray}
+                                                            className="heart-gray-img"
+                                                        />
+                                                        <p>{post.like_count}</p>
                                                     </div>
-                                                ))}
-
-                                            {isLoggedIn ? (
-                                                <div className="post-like">
-                                                    <button
-                                                        onClick={(e) => {
-                                                            e.preventDefault();
-                                                            handleLikeClick(
-                                                                post.id,
-                                                                post.is_liked
-                                                            );
-                                                        }}
-                                                    >
-                                                        {post.is_liked ? (
-                                                            <img
-                                                                src={
-                                                                    heartFilled
+                                                )}
+                                            </div>
+                                            <div className="popup-body">
+                                                <img
+                                                    src={post.imageUrl}
+                                                    className="popup-image"
+                                                />
+                                                <div className="popup-text">
+                                                    <div className="description">
+                                                        {editingPostId ===
+                                                        post.id ? (
+                                                            <textarea
+                                                                value={
+                                                                    editedPost?.description ||
+                                                                    ""
                                                                 }
-                                                                className="heart-img"
+                                                                onChange={(e) =>
+                                                                    setEditedPost(
+                                                                        {
+                                                                            ...editedPost,
+                                                                            description:
+                                                                                e
+                                                                                    .target
+                                                                                    .value,
+                                                                        }
+                                                                    )
+                                                                }
                                                             />
                                                         ) : (
-                                                            <img
-                                                                src={heartNot}
-                                                                className="heart-img"
-                                                            />
+                                                            <p>
+                                                                {
+                                                                    post.description
+                                                                }
+                                                            </p>
                                                         )}
-                                                    </button>
-                                                    <p>{post.like_count}</p>
+                                                    </div>
+                                                    <Comment id={post.id} />
                                                 </div>
-                                            ) : (
-                                                <div className="post-like">
-                                                    <img
-                                                        src={heartGray}
-                                                        className="heart-gray-img"
-                                                    />
-                                                    <p>{post.like_count}</p>
-                                                </div>
-                                            )}
-                                        </div>
-                                        <div className="popup-body">
-                                            <img
-                                                src={post.imageUrl}
-                                                className="popup-image"
-                                            />
-                                            <div className="popup-text">
-                                                <div className="description">
-                                                    {editingPostId ===
-                                                    post.id ? (
-                                                        <textarea
-                                                            value={
-                                                                editedPost?.description ||
-                                                                ""
-                                                            }
-                                                            onChange={(e) =>
-                                                                setEditedPost({
-                                                                    ...editedPost,
-                                                                    description:
-                                                                        e.target
-                                                                            .value,
-                                                                })
-                                                            }
-                                                        />
-                                                    ) : (
-                                                        <p>
-                                                            {post.description}
-                                                        </p>
-                                                    )}
-                                                </div>
-                                                <Comment id={post.id} />
                                             </div>
                                         </div>
-                                    </div>
-                                </Popup>
-                            )}
-                        </Marker>
-                    );
-                })
-            ) : (
-                <p style={{ textAlign: "center", color: "#888" }}>
-                    投稿がありません
-                </p>
-            )}
+                                    </Popup>
+                                )}
+                            </Marker>
+                        );
+                    })
+                ) : (
+                    <p style={{ textAlign: "center", color: "#888" }}>
+                        投稿がありません
+                    </p>
+                )}
+                {selectedPosition && (
+                    <Marker
+                        position={[selectedPosition.lat, selectedPosition.lng]}
+                        icon={DefaultIcon}
+                        eventHandlers={{
+                            add: (e) => {
+                                e.target.openPopup();
+                            },
+                        }}
+                    >
+                        <Popup className="post-form-popup">
+                            <PostForm
+                                id={id || ""}
+                                lat={selectedPosition.lat}
+                                lng={selectedPosition.lng}
+                                onAddPost={onAddPost}
+                                setSelectedPosition={setSelectedPosition}
+                            />
+                        </Popup>
+                    </Marker>
+                )}
+            </MapContainer>
             {true && (
-                <div className={`bottom-sheet ${selectedPost ? (isClosing ? "closing" : "active") : ""}`}>
+                <div
+                    className={`bottom-sheet ${
+                        selectedPost ? (isClosing ? "closing" : "active") : ""
+                    }`}
+                    onClick={(e) => e.stopPropagation()}
+                >
                     {selectedPost && (
                         <MobileDetail
                             post={selectedPost}
@@ -453,27 +494,6 @@ export default function Map({ posts, onAddPost, id }: MapProps) {
                     )}
                 </div>
             )}
-            {selectedPosition && (
-                <Marker
-                    position={[selectedPosition.lat, selectedPosition.lng]}
-                    icon={DefaultIcon}
-                    eventHandlers={{
-                        add: (e) => {
-                            e.target.openPopup();
-                        },
-                    }}
-                >
-                    <Popup className="post-form-popup">
-                        <PostForm
-                            id={id || ""}
-                            lat={selectedPosition.lat}
-                            lng={selectedPosition.lng}
-                            onAddPost={onAddPost}
-                            setSelectedPosition={setSelectedPosition}
-                        />
-                    </Popup>
-                </Marker>
-            )}
-        </MapContainer>
+        </>
     );
 }
