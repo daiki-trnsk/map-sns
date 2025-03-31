@@ -138,7 +138,7 @@
   position: absolute;
   width: 2em;
   height: 2em;
-  right: 10px;
+  right: 15px;
   /* top: 0px; */
   outline: none;
 }
@@ -1056,6 +1056,7 @@ details[open] summary::before {
   background-color: transparent;
   border: none;
   margin: 0;
+  padding: 0;
 }
 
 .close-img {
@@ -1096,4 +1097,31 @@ details[open] summary::before {
 .bottom-sheet .comment-box {
   height: auto;
   max-height: 200px;
+}
+
+.bottom-sheet .login-for-topic {
+  margin: 20px 0;
+}
+
+.bottom-sheet input {
+  font-size: 18px;
+}
+
+.bottom-sheet textarea {
+  font-size: 18px;
+}
+
+.login-request {
+  text-align: center;
+margin-bottom: 40px;
+}
+
+.login-request-button {
+  background-color: #f703ff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  text-decoration: none;
 }

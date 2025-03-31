@@ -78,6 +78,14 @@ export default function TopicList() {
 
     return (
         <div className="topic-list">
+            {!isLoggedIn && (
+                <div className="login-request">
+                    <p>これまで知り得なかった場所も、見つかる</p>
+                    <Link to="/login" className="login-request-button">
+                        ログイン
+                    </Link>
+                </div>
+                )}
             <form onSubmit={handleSearchSubmit} className="search-form">
                 <input type="text" placeholder="キーワード" />
                 <button type="submit">
