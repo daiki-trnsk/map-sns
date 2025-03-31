@@ -45,7 +45,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             } catch (err) {
                 if (err instanceof Error && err.message.includes("expired")) {
                     console.log("err:", err);
-                    // removeToken();
+                    removeToken();
                 }
                 // リフレッシュトークン関係実装するまで仮に期限切れのときトークン消す
                 return null;
