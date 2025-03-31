@@ -253,8 +253,7 @@ export default function Map({ posts, onAddPost, id }: MapProps) {
                                     },
                                 }}
                             >
-                                {/* {isDesktop && ( */}
-                                {false && (
+                                {isDesktop && (
                                     <Popup
                                         offset={[0, -85]}
                                         className="post-detail-popup"
@@ -467,7 +466,7 @@ export default function Map({ posts, onAddPost, id }: MapProps) {
                     </Marker>
                 )}
             </MapContainer>
-            {true && (
+            {isMobile && (
                 <div
                     className={`bottom-sheet ${
                         selectedPost ? (isClosing ? "closing" : "active") : ""

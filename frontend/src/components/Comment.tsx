@@ -4,6 +4,7 @@ import { API_HOST } from "../common";
 import { getToken } from "../utils/auth";
 import { AuthContext } from "../context/AuthContext";
 import { formatDateToYYYYMMDDHHMM } from "../utils/format";
+import { isMobile, isDesktop } from "react-device-detect";
 
 interface CommentProps {
     id: string;
@@ -73,6 +74,27 @@ export default function Comment({ id }: CommentProps) {
     return (
         <div className="comment-container">
             <h4>コメント</h4>
+            {isMobile &&
+                (isLoggedIn ? (
+                    <form onSubmit={handleSubmit} className="comment-form">
+                        <input
+                            type="text"
+                            value={comment}
+                            onChange={(e) => setComment(e.target.value)}
+                            placeholder="コメントを入力"
+                            maxLength={500}
+                            required
+                        />
+                        <button type="submit">➤</button>
+                    </form>
+                ) : (
+                    <div className="login-for-topic">
+                        ログインしてコメントを投稿
+                        <Link to="/login" className="login-button">
+                            Login
+                        </Link>
+                    </div>
+                ))}
             <div className="comment-box" ref={commentBoxRef}>
                 {commentList.length > 0 ? (
                     commentList
@@ -80,8 +102,10 @@ export default function Comment({ id }: CommentProps) {
                         .reverse()
                         .map((c, index) => (
                             <div key={index} className="comment-item">
-                                <p>{c.text}</p> 
-                                <p className="comment-date">{formatDateToYYYYMMDDHHMM(c.created_at)}</p>
+                                <p>{c.text}</p>
+                                <p className="comment-date">
+                                    {formatDateToYYYYMMDDHHMM(c.created_at)}
+                                </p>
                                 <hr />
                             </div>
                         ))
@@ -89,26 +113,27 @@ export default function Comment({ id }: CommentProps) {
                     <p className="no-comment">まだコメントはありません</p>
                 )}
             </div>
-            {isLoggedIn ? (
-                <form onSubmit={handleSubmit} className="comment-form">
-                    <input
-                        type="text"
-                        value={comment}
-                        onChange={(e) => setComment(e.target.value)}
-                        placeholder="コメントを入力"
-                        maxLength={500}
-                        required
-                    />
-                    <button type="submit">➤</button>
-                </form>
-            ) : (
-                <div className="login-for-topic">
-                    ログインしてコメントを投稿
-                    <Link to="/login" className="login-button">
-                        Login
-                    </Link>
-                </div>
-            )}
+            {isDesktop &&
+                (isLoggedIn ? (
+                    <form onSubmit={handleSubmit} className="comment-form">
+                        <input
+                            type="text"
+                            value={comment}
+                            onChange={(e) => setComment(e.target.value)}
+                            placeholder="コメントを入力"
+                            maxLength={500}
+                            required
+                        />
+                        <button type="submit">➤</button>
+                    </form>
+                ) : (
+                    <div className="login-for-topic">
+                        ログインしてコメントを投稿
+                        <Link to="/login" className="login-button">
+                            Login
+                        </Link>
+                    </div>
+                ))}
         </div>
     );
 }

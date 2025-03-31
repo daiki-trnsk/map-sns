@@ -154,7 +154,6 @@ const MobileDetail: React.FC<MobileDetailProps> = ({
                     )}
                 </div>
                 <div className="popup-body">
-                    <img src={post.imageUrl} className="popup-image" />
                     <div className="popup-text">
                         <div className="description">
                             {editingPostId === post.id ? (
@@ -171,6 +170,10 @@ const MobileDetail: React.FC<MobileDetailProps> = ({
                                 <p>{post.description}</p>
                             )}
                         </div>
+
+                        {post.imageUrl && (
+                            <img src={post.imageUrl} className="popup-image" />
+                        )}
                         <Comment id={post.id} />
                     </div>
                 </div>

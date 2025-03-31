@@ -102,6 +102,8 @@ func Login(c echo.Context) error {
 	token, refreshToken, _ := generate.TokenGenerator(*founduser.Email, *founduser.Nickname, founduser.User_ID)
 	defer cancel()
 	generate.UpdateAllTokens(token, refreshToken, founduser.User_ID)
+	founduser.Token = &token
+	founduser.Refresh_Token = &refreshToken
 	fmt.Println("founduser", http.StatusFound, founduser)
 	return c.JSON(http.StatusOK, founduser)
 }
