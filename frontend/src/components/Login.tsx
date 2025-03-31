@@ -1,6 +1,6 @@
 import React, { useState, useContext } from "react";
 import { API_HOST } from "../common";
-import { setToken } from "../utils/auth";
+import { removeToken, setToken } from "../utils/auth";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import logo from "../assets/logo.png";
@@ -23,6 +23,7 @@ export default function Login() {
         }
 
         setIsLoading(true);
+        removeToken();
 
         const userData = {
             email: email,

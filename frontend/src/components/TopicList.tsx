@@ -14,6 +14,7 @@ export default function TopicList() {
     const { isLoggedIn, setIsLoggedIn } = useContext(AuthContext);
     const [topics, setTopics] = useState<Topic[]>([]);
     const [searchValue, setSearchValue] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
 
     const fetchTopics = async () => {
         try {
@@ -33,10 +34,13 @@ export default function TopicList() {
             setTopics(data);
         } catch (err) {
             console.error("Error:", err);
+        } finally {
+            setIsLoading(false);
         }
     };
 
     useEffect(() => {
+        setIsLoading(true);
         fetchTopics();
     }, [searchValue]);
 
@@ -78,6 +82,14 @@ export default function TopicList() {
 
     return (
         <div className="topic-list">
+            {!isLoggedIn && (
+                <div className="login-request">
+                    <p>これまで知り得なかった場所も、見つかる</p>
+                    <Link to="/login" className="login-request-button">
+                        ログイン
+                    </Link>
+                </div>
+            )}
             <form onSubmit={handleSearchSubmit} className="search-form">
                 <input type="text" placeholder="キーワード" />
                 <button type="submit">
@@ -85,6 +97,11 @@ export default function TopicList() {
                 </button>
             </form>
 
+            {isLoading && (
+                <div className="loading">
+                    <p>Loading...</p>
+                </div>
+            )}
             {(topics ?? []).map((topic) => (
                 <Link
                     to={`/topic/${topic.id}`}

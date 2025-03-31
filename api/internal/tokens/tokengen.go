@@ -17,9 +17,9 @@ import (
 )
 
 type SignedDetails struct {
-	Email      string
-	Nickname   string
-	Uid        string
+	Email    string
+	Nickname string
+	Uid      string
 	jwt.StandardClaims
 }
 
@@ -27,10 +27,13 @@ var UserData *mongo.Collection = database.UserData(database.Client, "Users")
 var SECRET_KEY = os.Getenv("SECRET_LOVE")
 
 func TokenGenerator(email string, nickname string, uid string) (signedtoken string, signedrefreshtoken string, err error) {
+	fmt.Println("Now:", time.Now())
+	fmt.Println("Now.Local:", time.Now().Local())
+	fmt.Println("UNIX:", time.Now().Unix())
 	claims := &SignedDetails{
-		Email:      email,
-		Nickname:   nickname,
-		Uid:        uid,
+		Email:    email,
+		Nickname: nickname,
+		Uid:      uid,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Local().Add(time.Hour * time.Duration(24)).Unix(),
 		},
@@ -53,28 +56,31 @@ func TokenGenerator(email string, nickname string, uid string) (signedtoken stri
 }
 
 func ValidateToken(signedtoken string) (claims *SignedDetails, msg string) {
-    tokenString := signedtoken
-    if len(signedtoken) > 7 && signedtoken[:7] == "Bearer " {
-        tokenString = signedtoken[7:]
-    }
+	tokenString := signedtoken
+	if len(signedtoken) > 7 && signedtoken[:7] == "Bearer " {
+		tokenString = signedtoken[7:]
+	}
 	token, err := jwt.ParseWithClaims(tokenString, &SignedDetails{}, func(token *jwt.Token) (interface{}, error) {
 		return []byte(SECRET_KEY), nil
 	})
 
 	if err != nil {
 		msg = err.Error()
+		fmt.Println("token is expired4", claims, msg)
 		return
 	}
 	claims, ok := token.Claims.(*SignedDetails)
 	if !ok {
 		msg = "The Token is invalid"
+		fmt.Println("token is expired1")
 		return
 	}
 	if claims.ExpiresAt < time.Now().Local().Unix() {
 		msg = "token is expired"
-		fmt.Println("token is expired")
+		fmt.Println("token is expired2")
 		return
 	}
+	fmt.Println("token is expired3", claims, msg)
 	return claims, msg
 }
 
