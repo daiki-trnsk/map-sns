@@ -54,7 +54,8 @@ export default function Map({ posts, onAddPost, id }: MapProps) {
     const mapRef = useRef<L.Map | null>(null!);
     const bottomSheetRef = useRef<HTMLDivElement | null>(null);
     const bottomSheetHeight = 450; // px
-    const offsetYAdjustment = 100; // px
+    // 実際にモバイルからアクセスすると低めに表示されるので静的に調整
+    const offsetYAdjustment = 150; // px
 
     useEffect(() => {
         if (isLoggedIn && typeof isLoggedIn !== "boolean" && isLoggedIn.user) {
