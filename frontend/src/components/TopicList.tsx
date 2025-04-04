@@ -99,7 +99,9 @@ export default function TopicList() {
 
             {isLoading && (
                 <div className="loading">
-                    <p>Loading...</p>
+                    <div className="spinner-box">
+                        <div className="three-quarter-spinner"></div>
+                    </div>
                 </div>
             )}
             {(topics ?? []).map((topic) => (

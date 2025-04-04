@@ -1,17 +1,26 @@
-import React, { useContext, useState } from "react";
+import React, { use, useContext, useEffect, useState } from "react";
 import Header from "../components/UI/Header";
 import Footer from "../components/UI/Footer";
 import { AuthContext } from "../context/AuthContext";
 import { API_HOST } from "../common";
 import { getToken } from "../utils/auth";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import send from "../assets/send.png";
 
 export default function TopicCreate() {
     const { isLoggedIn } = useContext(AuthContext);
     const [topicTitle, setTopicTitle] = useState("");
     const [description, setDescription] = useState("");
+    const navigate = useNavigate();
 
-    const handleSubmit = async (e: { preventDefault: () => void; }) => {
+    useEffect(() => {
+        if (!getToken()) {
+            navigate("/login");
+            return;
+        }
+    });
+
+    const handleSubmit = async (e: { preventDefault: () => void }) => {
         e.preventDefault();
 
         if (!topicTitle.trim() || !description.trim()) {
@@ -58,7 +67,7 @@ export default function TopicCreate() {
                             className="topic-form-title"
                             value={topicTitle}
                             onChange={(e) => setTopicTitle(e.target.value)}
-                            placeholder="トピックのタイトル"
+                            placeholder="title"
                             maxLength={500}
                             required
                         />
@@ -66,11 +75,13 @@ export default function TopicCreate() {
                             className="topic-form-description"
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
-                            placeholder="トピックの説明"
+                            placeholder="description"
                             maxLength={500}
                             required
                         />
-                        <button type="submit">POST</button>
+                        <button type="submit">
+                            <img src={send} className="send-img" />
+                        </button>
                     </form>
                 ) : (
                     <div className="login-for-topic">

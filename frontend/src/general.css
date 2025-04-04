@@ -174,7 +174,7 @@
 
 .topic-form-title {
   width: 80%;
-  height: 3em;
+  height: 1em;
   border-radius: 6px;
   padding: 10px;
   border: 1px solid #ccc;
@@ -892,6 +892,7 @@ details[open] summary::before {
   border: none;
   background-color: transparent;
   cursor: pointer;
+  font-size: large;
   font-weight: 600;
   color: #ff0000;
 }
