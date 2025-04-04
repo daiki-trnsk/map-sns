@@ -34,7 +34,10 @@ export default function User() {
                 {userData ? (
                     <UserInfo userData={userData} />
                 ) : (
-                    <p>Loading...</p>
+                    
+                <div className="loader-container">
+                    <div className="loader"></div>
+                </div>
                 )}
             </div>
             <Footer />

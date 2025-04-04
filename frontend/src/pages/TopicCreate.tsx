@@ -11,6 +11,7 @@ export default function TopicCreate() {
     const { isLoggedIn } = useContext(AuthContext);
     const [topicTitle, setTopicTitle] = useState("");
     const [description, setDescription] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -33,6 +34,8 @@ export default function TopicCreate() {
             description: description,
         };
 
+        setIsLoading(true);
+
         try {
             const res = await fetch(`${API_HOST}/topics`, {
                 method: "POST",
@@ -51,9 +54,12 @@ export default function TopicCreate() {
             // setTopics((prevTopics) => [...prevTopics, data]);
             setTopicTitle("");
             setDescription("");
+            navigate("/");
         } catch (error) {
             console.error("エラー:", error);
             alert("トピックの追加に失敗しました");
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -61,36 +67,33 @@ export default function TopicCreate() {
         <>
             <Header />
             <div className="topic-create-container">
-                {isLoggedIn ? (
-                    <form onSubmit={handleSubmit} className="topic-form">
-                        <input
-                            className="topic-form-title"
-                            value={topicTitle}
-                            onChange={(e) => setTopicTitle(e.target.value)}
-                            placeholder="title"
-                            maxLength={500}
-                            required
-                        />
-                        <textarea
-                            className="topic-form-description"
-                            value={description}
-                            onChange={(e) => setDescription(e.target.value)}
-                            placeholder="description"
-                            maxLength={500}
-                            required
-                        />
+                <form onSubmit={handleSubmit} className="topic-form">
+                    <input
+                        className="topic-form-title"
+                        value={topicTitle}
+                        onChange={(e) => setTopicTitle(e.target.value)}
+                        placeholder="title"
+                        maxLength={500}
+                        required
+                    />
+                    <textarea
+                        className="topic-form-description"
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                        placeholder="description"
+                        maxLength={500}
+                        required
+                    />
+                    {isLoading ? (
+                        <div className="spinner-box">
+                            <div className="three-quarter-spinner"></div>
+                        </div>
+                    ) : (
                         <button type="submit">
                             <img src={send} className="send-img" />
                         </button>
-                    </form>
-                ) : (
-                    <div className="login-for-topic">
-                        ログインしてトピックを投稿
-                        <Link to="/login" className="login-button">
-                            Login
-                        </Link>
-                    </div>
-                )}
+                    )}
+                </form>
             </div>
             <Footer />
         </>
