@@ -139,7 +139,7 @@ export default function UserInfo({ userData }: { userData: UserData }) {
             <div className="user-info">
                 <h1>{user.nickname}</h1>
                 <h3>{user.email}</h3>
-                <button onClick={handleLogout}>ログアウト</button>
+                <button onClick={handleLogout}>Logout</button>
             </div>
             <div className="user-topics">
                 <div className="list-selecter">
@@ -226,6 +226,7 @@ export default function UserInfo({ userData }: { userData: UserData }) {
                                         to={`/topic/${topic.id}`}
                                         className="topic-item"
                                         key={topic.id}
+                                        state={topic.topic_title}
                                     >
                                         <div className="topic-item-content">
                                             <div className="topic-item-title">

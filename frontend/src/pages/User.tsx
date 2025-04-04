@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { API_HOST } from "../common";
-import { getToken } from "../utils/auth";
+import { getToken, isToken } from "../utils/auth";
 import { UserData } from "../types/user";
 import Footer from "../components/UI/Footer";
 import UserInfo from "../components/UserInfo";
@@ -12,7 +12,7 @@ export default function User() {
     const [userData, setUserData] = useState<UserData>();
     // トピックリスト再利用？
     useEffect(() => {
-        if (!getToken()) {
+        if (!isToken()) {
             navigate("/login");
             return;
         }
@@ -34,7 +34,10 @@ export default function User() {
                 {userData ? (
                     <UserInfo userData={userData} />
                 ) : (
-                    <p>Loading...</p>
+                    
+                <div className="loader-container">
+                    <div className="loader"></div>
+                </div>
                 )}
             </div>
             <Footer />

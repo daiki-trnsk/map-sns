@@ -6,13 +6,16 @@ import { API_HOST } from "../common";
 import { getToken } from "../utils/auth";
 import { AuthContext } from "../context/AuthContext";
 import React from "react";
+import send from "../assets/send.png";
 
 interface PostFormProps {
     id: string;
     lat: number;
     lng: number;
     onAddPost: (post: any) => void;
-    setSelectedPosition: (position: { lat: number; lng: number } | null) => void;
+    setSelectedPosition: (
+        position: { lat: number; lng: number } | null
+    ) => void;
 }
 
 export default function PostForm({
@@ -209,9 +212,15 @@ export default function PostForm({
                             }}
                         />
                     )}
-                    <button type="submit" disabled={uploading}>
-                        {uploading ? "アップロード中..." : "投稿"}
-                    </button>
+                    {uploading ? (
+                        <div className="spinner-box">
+                            <div className="three-quarter-spinner"></div>
+                        </div>
+                    ) : (
+                        <button type="submit" disabled={uploading}>
+                            <img src={send} className="send-img" />
+                        </button>
+                    )}
                 </form>
             ) : (
                 <div className="login-for-topic">

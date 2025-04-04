@@ -76,6 +76,15 @@
   }
 }
 
+@keyframes fadeOutAnimation {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
 /* input, textarea {
   outline: none;
 } */
@@ -157,7 +166,7 @@
   max-width: 600px;
   padding: 20px 0px;
   flex-direction: column;
-  background-color: #eeeeee;
+  /* background-color: #eeeeee; */
   border-radius: 8px;
   margin-left: auto;
   margin-right: auto;
@@ -165,10 +174,10 @@
 
 .topic-form-title {
   width: 80%;
-  height: 3em;
-  border-radius: 6px;
+  height: 1em;
   padding: 10px;
-  border: 1px solid #ccc;
+  border: none;
+  border-bottom: 1px solid #ccc;
   font-size: 16px;
   font-weight: 600;
 }
@@ -176,8 +185,8 @@
 .topic-form-description {
   font-size: 16px;
   padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
+  border: none;
+  border-bottom: 1px solid #ccc;
   width: 80%;
   height: 100px !important;
   resize: none;
@@ -738,6 +747,29 @@ details[open] summary::before {
   animation: spin .5s linear 0s infinite;
 }
 
+.topic-form .spinner-box, .post-form .spinner-box {
+  position: static;
+}
+
+.topic-form .three-quarter-spinner, .post-form .three-quarter-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #000000;
+  border-top: 2px solid transparent;
+  border-radius: 50%;
+}
+
+.post-form .three-quarter-spinner {
+  margin-top: 21px;
+  margin-bottom: 10px;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #000000;
+  border-top: 2px solid transparent;
+  border-radius: 50%;
+}
+
+
 .register-link {
   position: absolute;
   left: 50px;
@@ -883,6 +915,7 @@ details[open] summary::before {
   border: none;
   background-color: transparent;
   cursor: pointer;
+  font-size: large;
   font-weight: 600;
   color: #ff0000;
 }
@@ -922,14 +955,9 @@ details[open] summary::before {
 
 .post-form button {
   margin-top: 20px;
-  padding: 10px 20px;
-  font-size: 16px;
-  color: #fff;
-  background-color: #f703ff;
+  background-color: transparent;
   border: none;
-  border-radius: 5px;
   cursor: pointer;
-  transition: background-color 0.3s;
 }
 
 .post-info {
@@ -1136,4 +1164,55 @@ margin-bottom: 40px;
 
 .custom-div-icon.selected-post {
   z-index: 5000 !important;
+}
+
+.topic-detail-header {
+  color: #fff;
+  background-color: rgba(0, 0, 0, 0.534);
+  padding: 5px 10px;
+  border-radius: 5px;
+  text-align: center;
+  width: auto;
+  max-width: 90%;
+  margin-left: auto;
+  margin-right: auto;
+  position: fixed;
+  top: 70px;
+  z-index: 1000;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  
+  opacity: 1;
+  animation: fadeOutAnimation 1s forwards 2s;
+}
+
+.loader-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top:200px;
+  width: 100%;
+  z-index: 9999;
+}
+
+.loader {
+  width: 45px;
+  aspect-ratio: .75;
+  --c: no-repeat linear-gradient(#f703ff, #f703ff);
+  background: 
+    var(--c) 0%   50%,
+    var(--c) 50%  50%,
+    var(--c) 100% 50%;
+  background-size: 20% 50%;
+  animation: l6 1s infinite linear;
+}
+@keyframes l6 {
+  20% {background-position: 0% 0%  ,50% 50% ,100% 50% }
+  40% {background-position: 0% 100%,50% 0%  ,100% 50% }
+  60% {background-position: 0% 50% ,50% 100%,100% 0%  }
+  80% {background-position: 0% 50% ,50% 50% ,100% 100%}
 }
