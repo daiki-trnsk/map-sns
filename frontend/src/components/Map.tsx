@@ -54,7 +54,7 @@ export default function Map({ posts, onAddPost, id }: MapProps) {
     const mapRef = useRef<L.Map | null>(null!);
     const bottomSheetRef = useRef<HTMLDivElement | null>(null);
     const bottomSheetHeight = 450; // px
-    const offsetYAdjustment = 70; // px
+    const offsetYAdjustment = 100; // px
 
     useEffect(() => {
         if (isLoggedIn && typeof isLoggedIn !== "boolean" && isLoggedIn.user) {
@@ -67,7 +67,12 @@ export default function Map({ posts, onAddPost, id }: MapProps) {
             setLocalTopics(posts);
         }
 
-        if (selectedPost && mapRef.current && isMobile && bottomSheetRef.current) {
+        if (
+            selectedPost &&
+            mapRef.current &&
+            isMobile &&
+            bottomSheetRef.current
+        ) {
             const latLng = L.latLng(
                 selectedPost.location.lat,
                 selectedPost.location.lng
