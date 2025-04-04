@@ -7,7 +7,7 @@ import {
     useMap,
 } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
-import * as L from "leaflet";
+import L from "leaflet";
 import { useState, useContext, useEffect, useRef } from "react";
 import "../general.css";
 import PostForm from "./PostForm";
@@ -41,7 +41,7 @@ interface EditedPost {
 
 export default function Map({ posts, onAddPost, id }: MapProps) {
     const { isLoggedIn, setIsLoggedIn } = useContext(AuthContext);
-    const [localPosts, setLocalTopics] = useState(posts);
+    const [localPosts, setLocalPosts] = useState(posts);
     const [selectedPosition, setSelectedPosition] = useState<{
         lat: number;
         lng: number;
@@ -53,7 +53,6 @@ export default function Map({ posts, onAddPost, id }: MapProps) {
     const [isClosing, setIsClosing] = useState(false);
     const mapRef = useRef<L.Map | null>(null!);
     const bottomSheetRef = useRef<HTMLDivElement | null>(null);
-    const bottomSheetHeight = 450; // px
     // 実際にモバイルからアクセスすると低めに表示されるので静的に調整
     // プラットフォームによって異なる
     const offsetYAdjustment = 150; // px
@@ -66,9 +65,11 @@ export default function Map({ posts, onAddPost, id }: MapProps) {
         }
 
         if (posts) {
-            setLocalTopics(posts);
+            setLocalPosts(posts);
         }
+    }, [isLoggedIn, posts]);
 
+    useEffect(() => {
         if (
             selectedPost &&
             mapRef.current &&
@@ -79,27 +80,20 @@ export default function Map({ posts, onAddPost, id }: MapProps) {
                 selectedPost.location.lat,
                 selectedPost.location.lng
             );
-            // mapRef.current.setView(latLng, 15, {
-            //     animate: true,
-            // });
             const bottomSheetHeight = bottomSheetRef.current.offsetHeight;
             const mapSize = mapRef.current.getSize();
             const markerPoint = mapRef.current.latLngToContainerPoint(latLng);
             const centerX = mapSize.x / 2;
             const offsetX = centerX - markerPoint.x;
-            console.log("bottomSheetHeight", bottomSheetHeight);
-            console.log("mapSize", mapSize);
-            console.log("latLng", latLng);
-            console.log("markerPoint", markerPoint);
             const offsetY =
                 mapSize.y -
                 bottomSheetHeight -
                 markerPoint.y -
                 offsetYAdjustment;
-            console.log("offsetY", offsetY);
+
             mapRef.current.panBy([-offsetX, -offsetY], { animate: true });
         }
-    }, [isLoggedIn, posts, selectedPost]);
+    }, [selectedPost, isMobile]);
 
     function MapClickHandler() {
         const map = useMap();
@@ -121,11 +115,13 @@ export default function Map({ posts, onAddPost, id }: MapProps) {
     }
 
     const updateLocalPost = (updatedPost: Post) => {
-        setLocalTopics((prevPosts) =>
+        console.log("updatedPost", updatedPost);
+        setLocalPosts((prevPosts) =>
             prevPosts.map((post) =>
                 post.id === updatedPost.id ? updatedPost : post
             )
         );
+        console.log("localPosts", localPosts);
         if (selectedPost?.id === updatedPost.id) {
             setSelectedPost(updatedPost);
         }
@@ -168,7 +164,7 @@ export default function Map({ posts, onAddPost, id }: MapProps) {
             alert("削除に失敗しました");
             return;
         }
-        setLocalTopics((prevPosts) =>
+        setLocalPosts((prevPosts) =>
             prevPosts.filter((post) => post.id !== id)
         );
     };

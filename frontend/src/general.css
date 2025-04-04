@@ -524,11 +524,12 @@ button {
 }
 
 .comment-form button {
-  padding: 8px 12px;
-  background-color: #f703ff;
-  color: white;
+  /* padding: 8px 12px; */
+  /* background-color: #f703ff; */
+  /* color: white; */
   border: none;
-  border-radius: 5px;
+  /* border-radius: 5px; */
+  background-color: transparent;
   cursor: pointer;
 }
 
@@ -652,7 +653,8 @@ details[open] summary::before {
 .home-img,
 .account-img,
 .topic-create-img,
-.login-img {
+.login-img,
+.send-img {
   width: 30px;
   height: auto;
 }
@@ -969,7 +971,7 @@ details[open] summary::before {
 .popup-content input {
   width: 100%;
   padding: 5px;
-  margin-bottom: 5px;
+  /* margin-bottom: 5px; */
   border: 1px solid #ccc;
   border-radius: 6px;
   font-size: 15px;

@@ -5,6 +5,7 @@ import { getToken } from "../utils/auth";
 import { AuthContext } from "../context/AuthContext";
 import { formatDateToYYYYMMDDHHMM } from "../utils/format";
 import { isMobile, isDesktop } from "react-device-detect";
+import send from "../assets/send.png";
 
 interface CommentProps {
     id: string;
@@ -85,7 +86,9 @@ export default function Comment({ id }: CommentProps) {
                             maxLength={500}
                             required
                         />
-                        <button type="submit">➤</button>
+                        <button type="submit">
+                            <img src={send} className="send-img" />
+                        </button>
                     </form>
                 ) : (
                     <div className="login-for-topic">
@@ -124,7 +127,9 @@ export default function Comment({ id }: CommentProps) {
                             maxLength={500}
                             required
                         />
-                        <button type="submit">➤</button>
+                        <button type="submit">
+                            <img src={send} className="send-img" />
+                        </button>
                     </form>
                 ) : (
                     <div className="login-for-topic">
