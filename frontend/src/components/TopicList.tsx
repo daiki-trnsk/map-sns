@@ -107,6 +107,7 @@ export default function TopicList() {
                     to={`/topic/${topic.id}`}
                     className="topic-item"
                     key={topic.id}
+                    state={topic.topic_title}
                 >
                     <div key={topic.id} className="topic-item-content">
                         <div className="topi-item-main">

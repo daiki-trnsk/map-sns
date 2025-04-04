@@ -76,6 +76,15 @@
   }
 }
 
+@keyframes fadeOutAnimation {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
 /* input, textarea {
   outline: none;
 } */
@@ -1137,3 +1146,28 @@ margin-bottom: 40px;
 .custom-div-icon.selected-post {
   z-index: 5000 !important;
 }
+
+.topic-detail-header {
+  color: #fff;
+  background-color: rgba(0, 0, 0, 0.534);
+  padding: 5px 10px;
+  border-radius: 5px;
+  text-align: center;
+  width: auto;
+  max-width: 90%;
+  margin-left: auto;
+  margin-right: auto;
+  position: fixed;
+  top: 70px;
+  z-index: 1000;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  
+  opacity: 1;
+  animation: fadeOutAnimation 1s forwards 2s;
+}
+

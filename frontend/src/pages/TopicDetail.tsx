@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import Map from "../components/Map";
 import { API_HOST } from "../common";
@@ -10,6 +10,8 @@ import React from "react";
 export default function TopicDetail() {
     const { id } = useParams();
     const [posts, setPosts] = useState<any[]>([]);
+    const location = useLocation();
+    const title = location.state as string;
 
     useEffect(() => {
         const token = getToken();
@@ -33,6 +35,7 @@ export default function TopicDetail() {
     return (
         <div className="full-view">
             <Header />
+            <div className="topic-detail-header">{title}</div>
             <Map posts={posts} onAddPost={handleAddPost} id={id} />
             <Footer />
         </div>
