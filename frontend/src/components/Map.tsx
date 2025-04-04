@@ -52,6 +52,7 @@ export default function Map({ posts, onAddPost, id }: MapProps) {
     const [selectedPost, setSelectedPost] = useState<Post | null>(null);
     const [isClosing, setIsClosing] = useState(false);
     const mapRef = useRef<L.Map | null>(null!);
+    const bottomSheetRef = useRef<HTMLDivElement | null>(null);
     const bottomSheetHeight = 450; // px
     const offsetYAdjustment = 70; // px
 
@@ -66,7 +67,7 @@ export default function Map({ posts, onAddPost, id }: MapProps) {
             setLocalTopics(posts);
         }
 
-        if (selectedPost && mapRef.current && isMobile) {
+        if (selectedPost && mapRef.current && isMobile && bottomSheetRef.current) {
             const latLng = L.latLng(
                 selectedPost.location.lat,
                 selectedPost.location.lng
@@ -74,10 +75,12 @@ export default function Map({ posts, onAddPost, id }: MapProps) {
             // mapRef.current.setView(latLng, 15, {
             //     animate: true,
             // });
+            const bottomSheetHeight = bottomSheetRef.current.offsetHeight;
             const mapSize = mapRef.current.getSize();
             const markerPoint = mapRef.current.latLngToContainerPoint(latLng);
             const centerX = mapSize.x / 2;
             const offsetX = centerX - markerPoint.x;
+            console.log("bottomSheetHeight", bottomSheetHeight);
             console.log("mapSize", mapSize);
             console.log("latLng", latLng);
             console.log("markerPoint", markerPoint);
@@ -505,6 +508,7 @@ export default function Map({ posts, onAddPost, id }: MapProps) {
             </MapContainer>
             {isMobile && (
                 <div
+                    ref={bottomSheetRef}
                     className={`bottom-sheet ${
                         selectedPost ? (isClosing ? "closing" : "active") : ""
                     }`}
