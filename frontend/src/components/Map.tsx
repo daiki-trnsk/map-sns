@@ -56,7 +56,7 @@ export default function Map({ posts, onAddPost, id }: MapProps) {
     const bottomSheetHeight = 450; // px
     // 実際にモバイルからアクセスすると低めに表示されるので静的に調整
     // プラットフォームによって異なる
-    // const offsetYAdjustment = 170; // px
+    const offsetYAdjustment = 170; // px
 
     useEffect(() => {
         if (isLoggedIn && typeof isLoggedIn !== "boolean" && isLoggedIn.user) {
@@ -94,8 +94,8 @@ export default function Map({ posts, onAddPost, id }: MapProps) {
             const offsetY =
                 mapSize.y -
                 bottomSheetHeight -
-                markerPoint.y //-
-                // offsetYAdjustment;
+                markerPoint.y -
+                offsetYAdjustment;
             console.log("offsetY", offsetY);
             mapRef.current.panBy([-offsetX, -offsetY], { animate: true });
         }
