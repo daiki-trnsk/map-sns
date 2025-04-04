@@ -27,7 +27,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const checkAuth = async () => {
         if (isToken()) {
-            console.log("errToken:", getToken());
             try {
                 const res = await fetch(`${API_HOST}/me`, {
                     method: "GET",
@@ -44,7 +43,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 }
             } catch (err) {
                 if (err instanceof Error && err.message.includes("expired")) {
-                    console.log("err:", err);
                     removeToken();
                 }
                 // リフレッシュトークン関係実装するまで仮に期限切れのときトークン消す

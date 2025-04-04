@@ -4,10 +4,11 @@ import {
     Marker,
     Popup,
     useMapEvent,
+    useMap,
 } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
-import L from "leaflet";
-import { useState, useContext, useEffect } from "react";
+import * as L from "leaflet";
+import { useState, useContext, useEffect, useRef } from "react";
 import "../general.css";
 import PostForm from "./PostForm";
 import Comment from "./Comment";
@@ -50,6 +51,9 @@ export default function Map({ posts, onAddPost, id }: MapProps) {
     const [currentUserID, setCurrentUserID] = useState<string | null>(null);
     const [selectedPost, setSelectedPost] = useState<Post | null>(null);
     const [isClosing, setIsClosing] = useState(false);
+    const mapRef = useRef<L.Map | null>(null!);
+    const bottomSheetHeight = 450; // px
+    const offsetYAdjustment = 70; // px
 
     useEffect(() => {
         if (isLoggedIn && typeof isLoggedIn !== "boolean" && isLoggedIn.user) {
@@ -61,9 +65,40 @@ export default function Map({ posts, onAddPost, id }: MapProps) {
         if (posts) {
             setLocalTopics(posts);
         }
-    }, [isLoggedIn, posts]);
+
+        if (selectedPost && mapRef.current && isMobile) {
+            const latLng = L.latLng(
+                selectedPost.location.lat,
+                selectedPost.location.lng
+            );
+            // mapRef.current.setView(latLng, 15, {
+            //     animate: true,
+            // });
+            const mapSize = mapRef.current.getSize();
+            const markerPoint = mapRef.current.latLngToContainerPoint(latLng);
+            const centerX = mapSize.x / 2;
+            const offsetX = centerX - markerPoint.x;
+            console.log("mapSize", mapSize);
+            console.log("latLng", latLng);
+            console.log("markerPoint", markerPoint);
+            const offsetY =
+                mapSize.y -
+                bottomSheetHeight -
+                markerPoint.y -
+                offsetYAdjustment;
+            console.log("offsetY", offsetY);
+            mapRef.current.panBy([-offsetX, -offsetY], { animate: true });
+        }
+    }, [isLoggedIn, posts, selectedPost]);
 
     function MapClickHandler() {
+        const map = useMap();
+        useEffect(() => {
+            if (!mapRef.current) {
+                mapRef.current = map;
+            }
+        }, [map]);
+
         useMapEvent("click", (e: any) => {
             setSelectedPosition((prevPosition) =>
                 prevPosition ? null : e.latlng
@@ -87,14 +122,12 @@ export default function Map({ posts, onAddPost, id }: MapProps) {
     };
 
     const handleClose = () => {
-        console.log("truing");
         setIsClosing(true);
         setSelectedPosition(null);
         setTimeout(() => {
             setSelectedPost(null);
-            console.log("falsing");
             setIsClosing(false);
-        }, 300);
+        }, 100);
     };
 
     const editPost = async (id: string) => {
@@ -221,7 +254,11 @@ export default function Map({ posts, onAddPost, id }: MapProps) {
                             : "post-title";
 
                         const htmlIcon = L.divIcon({
-                            className: `custom-div-icon`,
+                            className: `custom-div-icon ${
+                                selectedPost?.id === post.id
+                                    ? "selected-post"
+                                    : ""
+                            }`,
                             html: `
               <div class="map-thumbnail">
                 <div class=${circleClass}></div>

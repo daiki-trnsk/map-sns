@@ -76,6 +76,10 @@
   }
 }
 
+/* input, textarea {
+  outline: none;
+} */
+
 .topic-list {
   font-family: 'Arial', sans-serif;
   max-width: 800px;
@@ -1021,7 +1025,7 @@ details[open] summary::before {
   /* -ms-overflow-style: none;
   scrollbar-width: none; */
   box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
-  transition: bottom 0.3s ease-in-out;
+  transition: bottom 0.2s ease-in-out;
   border-radius: 20px 20px 0 0;
   margin-bottom: 50px;
 }
@@ -1105,10 +1109,12 @@ details[open] summary::before {
 
 .bottom-sheet input {
   font-size: 18px;
+  margin-top: 5px;
 }
 
 .bottom-sheet textarea {
   font-size: 18px;
+  margin-top: 5px;
 }
 
 .login-request {
@@ -1124,4 +1130,8 @@ margin-bottom: 40px;
   border-radius: 5px;
   cursor: pointer;
   text-decoration: none;
+}
+
+.custom-div-icon.selected-post {
+  z-index: 5000 !important;
 }
