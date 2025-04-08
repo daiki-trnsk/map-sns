@@ -307,6 +307,7 @@ export default function UserInfo({ userData }: { userData: UserData }) {
                                     to={`/topic/${topic.id}`}
                                     className="topic-item"
                                     key={topic.id}
+                                    state={topic.topic_title}
                                 >
                                     <div
                                         key={topic.id}
