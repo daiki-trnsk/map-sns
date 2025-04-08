@@ -1187,7 +1187,7 @@ margin-bottom: 40px;
 
   
   opacity: 1;
-  animation: fadeOutAnimation 1s forwards 2s;
+  /* animation: fadeOutAnimation 1s forwards 2s; */
 }
 
 .loader-container {
