@@ -268,7 +268,7 @@ export default function Map({ posts, onAddPost, id }: MapProps) {
                             html: `
               <div class="map-thumbnail">
                 <div class=${circleClass}></div>
-                <img src="${post.imageUrl}"/>
+                ${post.imageUrl ? `<img src="${post.imageUrl}" />` : ""}
                 <div class=${triangleClass}></div>
                 <div class="${titleClass}"><p>${post.post_title}</p><div>
               </div>

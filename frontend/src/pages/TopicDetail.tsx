@@ -35,9 +35,10 @@ export default function TopicDetail() {
     return (
         <div className="full-view">
             <Header />
-            <div className="topic-detail-header">{title}</div>
+            {/* ピン取得時にタイトルも取得するあとで */}
+            {title && <div className="topic-detail-header">{title}</div>}
             <Map posts={posts} onAddPost={handleAddPost} id={id} />
             <Footer />
         </div>
-    );
+    );  
 }
