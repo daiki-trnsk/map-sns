@@ -51,6 +51,11 @@ export default function Map({ posts, onAddPost, id }: MapProps) {
     const [currentUserID, setCurrentUserID] = useState<string | null>(null);
     const [selectedPost, setSelectedPost] = useState<Post | null>(null);
     const [isClosing, setIsClosing] = useState(false);
+    const [currentLocation, setCurrentLocation] = useState<{
+        lat: number;
+        lng: number;
+    } | null>(null);
+    const [currentMarker, setCurrentMarker] = useState<L.Marker | null>(null);
     const mapRef = useRef<L.Map | null>(null!);
     const bottomSheetRef = useRef<HTMLDivElement | null>(null);
     // 実際にモバイルからアクセスすると低めに表示されるので静的に調整
@@ -229,6 +234,32 @@ export default function Map({ posts, onAddPost, id }: MapProps) {
             const lng = selectedPost.location.lng;
             const url = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
             window.open(url, "_blank");
+        }
+    };
+
+    const getCurrentLocation = () => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition((position) => {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+                setCurrentLocation({ lat, lng });
+                if (mapRef.current) {
+                    if (currentMarker) {
+                        mapRef.current.removeLayer(currentMarker);
+                    }
+                    const newMarker = L.marker([lat, lng])
+                        .addTo(mapRef.current);
+                    setCurrentMarker(newMarker);
+                    console.log("getCurrent")
+                    // if (currentLocation) {
+                        mapRef.current.setView(
+                            [lat, lng], 15
+                        );
+                    // }
+                }
+            });
+        } else {
+            alert("Geolocation is not supported by this browser.");
         }
     };
 
@@ -526,6 +557,9 @@ export default function Map({ posts, onAddPost, id }: MapProps) {
                     </Marker>
                 )}
             </MapContainer>
+            <div className="get-current-location">
+                <button onClick={getCurrentLocation}>現</button>
+            </div>
             {isMobile && (
                 <div
                     ref={bottomSheetRef}

@@ -1217,6 +1217,13 @@ margin-bottom: 40px;
   animation: fadeOutAnimation 1s forwards 2s;
 }
 
+.get-current-location {
+  position: fixed;
+  right: 0;
+  bottom: 100px;
+  z-index: 800;
+}
+
 .loader-container {
   display: flex;
   justify-content: center;
