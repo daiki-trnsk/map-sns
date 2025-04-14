@@ -223,6 +223,15 @@ export default function Map({ posts, onAddPost, id }: MapProps) {
         updateLocalPost(updatedPost);
     };
 
+    const openGoogleMap = () => {
+        if (selectedPost) {
+            const lat = selectedPost.location.lat;
+            const lng = selectedPost.location.lng;
+            const url = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
+            window.open(url, "_blank");
+        }
+    };
+
     return (
         <>
             <MapContainer
@@ -336,6 +345,14 @@ export default function Map({ posts, onAddPost, id }: MapProps) {
                                                             post.created_at
                                                         )}
                                                     </p>
+                                                </div>
+                                                <div className="post-googlemap">
+                                                    <button
+                                                        onClick={openGoogleMap}
+                                                        className="google-map-button"
+                                                    >
+                                                        GoogleMap
+                                                    </button>
                                                 </div>
                                                 {isCurrentUserPost &&
                                                     (editingPostId ===
@@ -526,6 +543,7 @@ export default function Map({ posts, onAddPost, id }: MapProps) {
                             handleDeleteClick={handleDeleteClick}
                             handleSaveClick={handleSaveClick}
                             handleCancelClick={handleCancelClick}
+                            openGoogleMap={openGoogleMap}
                             editingPostId={editingPostId}
                             setEditingPostId={setEditingPostId}
                             setEditedPost={setEditedPost}
