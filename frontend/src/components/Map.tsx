@@ -121,13 +121,11 @@ export default function Map({ posts, onAddPost, id }: MapProps) {
     }
 
     const updateLocalPost = (updatedPost: Post) => {
-        console.log("updatedPost", updatedPost);
         setLocalPosts((prevPosts) =>
             prevPosts.map((post) =>
                 post.id === updatedPost.id ? updatedPost : post
             )
         );
-        console.log("localPosts", localPosts);
         if (selectedPost?.id === updatedPost.id) {
             setSelectedPost(updatedPost);
         }
@@ -240,6 +238,7 @@ export default function Map({ posts, onAddPost, id }: MapProps) {
 
     const getCurrentLocation = () => {
         if (navigator.geolocation) {
+            setSelectedPosition(null);
             navigator.geolocation.getCurrentPosition((position) => {
                 const lat = position.coords.latitude;
                 const lng = position.coords.longitude;

@@ -453,6 +453,11 @@ button {
   margin-bottom: 10px;
 }
 
+.leaflet-div-icon {
+  border: none !important;
+  background: white !important;
+  border-radius: 50% !important;
+}
 
 
 .comment-container {
