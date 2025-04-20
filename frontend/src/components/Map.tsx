@@ -27,6 +27,7 @@ import heartGray from "../assets/heartGray.png";
 import { formatDateToYYYYMMDD } from "../utils/format";
 import React from "react";
 import MobileDetail from "./MobileDetail";
+import currentLocationIcon from "./CurLocationMarker";
 
 interface MapProps {
     posts: Post[];
@@ -60,7 +61,7 @@ export default function Map({ posts, onAddPost, id }: MapProps) {
     const bottomSheetRef = useRef<HTMLDivElement | null>(null);
     // 実際にモバイルからアクセスすると低めに表示されるので静的に調整
     // プラットフォームによって異なる
-    const offsetYAdjustment = 70; // px
+    const offsetYAdjustment = 150; // px
 
     useEffect(() => {
         if (isLoggedIn && typeof isLoggedIn !== "boolean" && isLoggedIn.user) {
@@ -247,15 +248,11 @@ export default function Map({ posts, onAddPost, id }: MapProps) {
                     if (currentMarker) {
                         mapRef.current.removeLayer(currentMarker);
                     }
-                    const newMarker = L.marker([lat, lng])
-                        .addTo(mapRef.current);
+                    const newMarker = L.marker([lat, lng], { icon: currentLocationIcon }).addTo(
+                        mapRef.current
+                    );
                     setCurrentMarker(newMarker);
-                    console.log("getCurrent")
-                    // if (currentLocation) {
-                        mapRef.current.setView(
-                            [lat, lng], 15
-                        );
-                    // }
+                    mapRef.current.setView([lat, lng], 15);
                 }
             });
         } else {
