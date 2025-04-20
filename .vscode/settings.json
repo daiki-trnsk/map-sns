@@ -1,8 +1,0 @@
-{
-    "postman.settings.dotenv-detection-notification-visibility": false,
-    "editor.defaultFormatter": null,
-    "prettier.tabWidth": 4,
-    "[typescript]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
-    }
-}
