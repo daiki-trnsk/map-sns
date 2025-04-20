@@ -1224,9 +1224,24 @@ margin-bottom: 40px;
 
 .get-current-location {
   position: fixed;
-  right: 0;
+  right: 10px;
   bottom: 100px;
   z-index: 800;
+}
+
+.get-current-location button {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: none;
+  background-color: #fff;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.get-current-location img {
+  width: 40px; 
+  height: auto;
 }
 
 .loader-container {
