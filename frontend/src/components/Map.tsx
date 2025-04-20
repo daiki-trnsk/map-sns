@@ -23,6 +23,7 @@ import pen from "../assets/pen.png";
 import garbage from "../assets/garbage.png";
 import check from "../assets/check.png";
 import back from "../assets/back.png";
+import compass from "../assets/compass.png";
 import heartGray from "../assets/heartGray.png";
 import { formatDateToYYYYMMDD } from "../utils/format";
 import React from "react";
@@ -554,7 +555,9 @@ export default function Map({ posts, onAddPost, id }: MapProps) {
                 )}
             </MapContainer>
             <div className="get-current-location">
-                <button onClick={getCurrentLocation}>現</button>
+                <button onClick={getCurrentLocation}>
+                    <img src={compass}/>
+                </button>
             </div>
             {isMobile && (
                 <div
