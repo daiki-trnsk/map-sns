@@ -453,6 +453,11 @@ button {
   margin-bottom: 10px;
 }
 
+.leaflet-div-icon {
+  border: none !important;
+  background: white !important;
+  border-radius: 50% !important;
+}
 
 
 .comment-container {
@@ -973,6 +978,33 @@ details[open] summary::before {
   gap: 10px;
 }
 
+.post-googlemap {
+  margin: 0 10px;
+  margin-right: auto;
+}
+
+.google-map-button {
+  background-color: #fff;
+  border: 1px solid #dadce0;
+  border-radius: 4px;
+  padding: 3px 5px;
+  font-size: 14px;
+  color: #1a73e8;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.mobile-googlemap {
+  padding: 0;
+}
+
+.mobile-googlemap .google-map-button {
+}
+
+.google-map-button:hover {
+  background-color: #f1f3f4;
+}
+
 .post-opt {
   /* display: flex;
   gap: 5px; */
@@ -1187,7 +1219,14 @@ margin-bottom: 40px;
 
   
   opacity: 1;
-  /* animation: fadeOutAnimation 1s forwards 2s; */
+  animation: fadeOutAnimation 1s forwards 2s;
+}
+
+.get-current-location {
+  position: fixed;
+  right: 0;
+  bottom: 100px;
+  z-index: 800;
 }
 
 .loader-container {

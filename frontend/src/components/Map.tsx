@@ -27,6 +27,7 @@ import heartGray from "../assets/heartGray.png";
 import { formatDateToYYYYMMDD } from "../utils/format";
 import React from "react";
 import MobileDetail from "./MobileDetail";
+import currentLocationIcon from "./CurLocationMarker";
 
 interface MapProps {
     posts: Post[];
@@ -51,11 +52,16 @@ export default function Map({ posts, onAddPost, id }: MapProps) {
     const [currentUserID, setCurrentUserID] = useState<string | null>(null);
     const [selectedPost, setSelectedPost] = useState<Post | null>(null);
     const [isClosing, setIsClosing] = useState(false);
+    const [currentLocation, setCurrentLocation] = useState<{
+        lat: number;
+        lng: number;
+    } | null>(null);
+    const [currentMarker, setCurrentMarker] = useState<L.Marker | null>(null);
     const mapRef = useRef<L.Map | null>(null!);
     const bottomSheetRef = useRef<HTMLDivElement | null>(null);
     // 実際にモバイルからアクセスすると低めに表示されるので静的に調整
     // プラットフォームによって異なる
-    const offsetYAdjustment = 70; // px
+    const offsetYAdjustment = 150; // px
 
     useEffect(() => {
         if (isLoggedIn && typeof isLoggedIn !== "boolean" && isLoggedIn.user) {
@@ -115,13 +121,11 @@ export default function Map({ posts, onAddPost, id }: MapProps) {
     }
 
     const updateLocalPost = (updatedPost: Post) => {
-        console.log("updatedPost", updatedPost);
         setLocalPosts((prevPosts) =>
             prevPosts.map((post) =>
                 post.id === updatedPost.id ? updatedPost : post
             )
         );
-        console.log("localPosts", localPosts);
         if (selectedPost?.id === updatedPost.id) {
             setSelectedPost(updatedPost);
         }
@@ -223,6 +227,38 @@ export default function Map({ posts, onAddPost, id }: MapProps) {
         updateLocalPost(updatedPost);
     };
 
+    const openGoogleMap = () => {
+        if (selectedPost) {
+            const lat = selectedPost.location.lat;
+            const lng = selectedPost.location.lng;
+            const url = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
+            window.open(url, "_blank");
+        }
+    };
+
+    const getCurrentLocation = () => {
+        if (navigator.geolocation) {
+            setSelectedPosition(null);
+            navigator.geolocation.getCurrentPosition((position) => {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+                setCurrentLocation({ lat, lng });
+                if (mapRef.current) {
+                    if (currentMarker) {
+                        mapRef.current.removeLayer(currentMarker);
+                    }
+                    const newMarker = L.marker([lat, lng], { icon: currentLocationIcon }).addTo(
+                        mapRef.current
+                    );
+                    setCurrentMarker(newMarker);
+                    mapRef.current.setView([lat, lng], 15);
+                }
+            });
+        } else {
+            alert("Geolocation is not supported by this browser.");
+        }
+    };
+
     return (
         <>
             <MapContainer
@@ -268,7 +304,7 @@ export default function Map({ posts, onAddPost, id }: MapProps) {
                             html: `
               <div class="map-thumbnail">
                 <div class=${circleClass}></div>
-                <img src="${post.imageUrl}"/>
+                ${post.imageUrl ? `<img src="${post.imageUrl}" />` : ""}
                 <div class=${triangleClass}></div>
                 <div class="${titleClass}"><p>${post.post_title}</p><div>
               </div>
@@ -336,6 +372,14 @@ export default function Map({ posts, onAddPost, id }: MapProps) {
                                                             post.created_at
                                                         )}
                                                     </p>
+                                                </div>
+                                                <div className="post-googlemap">
+                                                    <button
+                                                        onClick={openGoogleMap}
+                                                        className="google-map-button"
+                                                    >
+                                                        GoogleMap
+                                                    </button>
                                                 </div>
                                                 {isCurrentUserPost &&
                                                     (editingPostId ===
@@ -509,6 +553,9 @@ export default function Map({ posts, onAddPost, id }: MapProps) {
                     </Marker>
                 )}
             </MapContainer>
+            <div className="get-current-location">
+                <button onClick={getCurrentLocation}>現</button>
+            </div>
             {isMobile && (
                 <div
                     ref={bottomSheetRef}
@@ -526,6 +573,7 @@ export default function Map({ posts, onAddPost, id }: MapProps) {
                             handleDeleteClick={handleDeleteClick}
                             handleSaveClick={handleSaveClick}
                             handleCancelClick={handleCancelClick}
+                            openGoogleMap={openGoogleMap}
                             editingPostId={editingPostId}
                             setEditingPostId={setEditingPostId}
                             setEditedPost={setEditedPost}

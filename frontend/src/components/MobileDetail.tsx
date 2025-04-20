@@ -38,6 +38,7 @@ interface MobileDetailProps {
         id: string,
         e: React.MouseEvent<HTMLButtonElement>
     ) => void;
+    openGoogleMap: () => void;
     isCurrentUserPost: boolean;
     isLoggedIn: boolean | UserData | null;
     editingPostId: string | null;
@@ -54,6 +55,7 @@ const MobileDetail: React.FC<MobileDetailProps> = ({
     handleDeleteClick,
     handleCancelClick,
     handleSaveClick,
+    openGoogleMap,
     isLoggedIn,
     editingPostId,
     setEditingPostId,
@@ -152,6 +154,14 @@ const MobileDetail: React.FC<MobileDetailProps> = ({
                             <p>{post.like_count}</p>
                         </div>
                     )}
+                </div>
+                <div className="mobile-googlemap">
+                    <button
+                        onClick={openGoogleMap}
+                        className="google-map-button"
+                    >
+                        GoogleMap
+                    </button>
                 </div>
                 <div className="popup-body">
                     <div className="popup-text">
