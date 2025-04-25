@@ -5,8 +5,8 @@ import curLocation from "../assets/curLocation.png";
 const currentLocationIcon = L.divIcon({
     html: `
     <div style="
-      width: 30px;
-      height: 30px;
+      width: 20px;
+      height: 20px;
       border-radius: 50%;
       overflow: hidden;
       box-shadow: 0 0 10px rgba(0,0,0,0.4);
@@ -15,8 +15,8 @@ const currentLocationIcon = L.divIcon({
     </div>
   `,
     // iconUrl: curLocation,
-    iconSize: [30, 30],
-    iconAnchor: [15, 15],
+    iconSize: [20, 20],
+    iconAnchor: [10, 10],
 });
 
 export default currentLocationIcon;
