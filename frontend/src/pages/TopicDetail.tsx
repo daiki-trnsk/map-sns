@@ -12,6 +12,7 @@ export default function TopicDetail() {
     const [posts, setPosts] = useState<any[]>([]);
     const location = useLocation();
     const title = location.state as string;
+    const [isVisible, setIsVisible] = useState(true);
 
     useEffect(() => {
         const token = getToken();
@@ -26,6 +27,12 @@ export default function TopicDetail() {
             .then((res) => res.json())
             .then((data) => setPosts(data))
             .catch((err) => console.error("Error:", err));
+
+        const timer = setTimeout(() => {
+            setIsVisible(false);
+        }, 3000);
+
+        return () => clearTimeout(timer);
     }, [id]);
 
     const handleAddPost = (newPost: any) => {
@@ -36,7 +43,7 @@ export default function TopicDetail() {
         <div className="full-view">
             <Header />
             {/* ピン取得時にタイトルも取得するあとで */}
-            {title && <div className="topic-detail-header">{title}</div>}
+            {title && isVisible &&<div className="topic-detail-header">{title}</div>}
             <Map posts={posts} onAddPost={handleAddPost} id={id} />
             <Footer />
         </div>
