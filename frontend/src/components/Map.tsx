@@ -240,6 +240,9 @@ export default function Map({ posts, onAddPost, id }: MapProps) {
     const getCurrentLocation = () => {
         if (navigator.geolocation) {
             setSelectedPosition(null);
+            if (mapRef.current) {
+                mapRef.current.closePopup();
+            }
             navigator.geolocation.getCurrentPosition((position) => {
                 const lat = position.coords.latitude;
                 const lng = position.coords.longitude;
@@ -325,11 +328,9 @@ export default function Map({ posts, onAddPost, id }: MapProps) {
                                 eventHandlers={{
                                     click: () => {
                                         setSelectedPost(post);
-                                        // console.log("click", selectedPost);
                                     },
                                     popupclose: () => {
                                         setSelectedPost(null);
-                                        // console.log("close", selectedPost);
                                     },
                                 }}
                             >
