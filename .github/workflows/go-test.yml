@@ -1,12 +1,11 @@
-name: Go Test
+name: Test and Deploy to ECS
 
 on:
   push:
     branches: [main, develop]
-  pull_request:
 
 jobs:
-  test:
+  test-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -18,13 +17,37 @@ jobs:
         with:
           go-version: '1.20'
 
-      - name: Install dependencies
-        working-directory: ./api
-        run: go mod tidy
-
-      - name: Run tests
+      - name: Run Go tests
         working-directory: ./api
         env:
           MONGO_URI: mongodb://localhost:27017
           TEST_ENV: true
-        run: go test -v ./...
+        run: |
+          go mod tidy
+          go test -v ./...
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        run: |
+          aws ecr get-login-password --region ${{ secrets.AWS_REGION }} \
+            | docker login --username AWS --password-stdin ${{ secrets.ECR_REGISTRY }}
+
+      - name: Build and push Docker image
+        working-directory: ./api
+        run: |
+          docker build -t ${{ secrets.ECR_REPOSITORY }} .
+          docker tag ${{ secrets.ECR_REPOSITORY }}:latest ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:latest
+          docker push ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:latest
+
+      - name: Deploy to Amazon ECS
+        run: |
+          aws ecs update-service \
+            --cluster ${{ secrets.ECS_CLUSTER }} \
+            --service ${{ secrets.ECS_SERVICE }} \
+            --force-new-deployment
