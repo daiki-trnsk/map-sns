@@ -11,7 +11,14 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+var isTestEnv = os.Getenv("TEST_ENV") == "true"
+
 func DBSet() *mongo.Client {
+	if isTestEnv {
+		fmt.Println("Using mock database client for testing")
+		return nil // モッククライアントを返す
+	}
+
 	uri := os.Getenv("MONGO_URI")
 	if uri == "" {
 		log.Fatal("MONGO_URI is not set")
@@ -28,10 +35,10 @@ func DBSet() *mongo.Client {
 		log.Fatal(err)
 	}
 
-    err = client.Ping(context.TODO(), nil)
-    if err != nil {
-        log.Fatalf("Failed to ping MongoDB: %v", err)
-    }
+	err = client.Ping(context.TODO(), nil)
+	if err != nil {
+		log.Fatalf("Failed to ping MongoDB: %v", err)
+	}
 	fmt.Println("Successfully Connected to the mongodb")
 	return client
 }
@@ -39,21 +46,33 @@ func DBSet() *mongo.Client {
 var Client *mongo.Client = DBSet()
 
 func UserData(client *mongo.Client, CollectionName string) *mongo.Collection {
+	if client == nil {
+		return nil
+	}
 	var collection *mongo.Collection = client.Database("map-sns").Collection(CollectionName)
 	return collection
 }
 
 func TopicData(client *mongo.Client, CollectionName string) *mongo.Collection {
+	if client == nil {
+		return nil
+	}
 	var topiccollection *mongo.Collection = client.Database("map-sns").Collection(CollectionName)
 	return topiccollection
 }
 
 func PostData(client *mongo.Client, CollectionName string) *mongo.Collection {
+	if client == nil {
+		return nil
+	}
 	var postcollection *mongo.Collection = client.Database("map-sns").Collection(CollectionName)
 	return postcollection
 }
 
 func CommentData(client *mongo.Client, CollectionName string) *mongo.Collection {
+	if client == nil {
+		return nil
+	}
 	var commentcollection *mongo.Collection = client.Database("map-sns").Collection(CollectionName)
 	return commentcollection
 }
