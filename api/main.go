@@ -4,11 +4,12 @@ import (
 	"log"
 	"os"
 
-	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 
 	"github.com/daiki-trnsk/map-sns/internal/controllers"
 	customMiddleware "github.com/daiki-trnsk/map-sns/internal/middleware"
+
 	// "github.com/daiki-trnsk/map-sns/internal/routes"
 	"github.com/daiki-trnsk/map-sns/pkg/database"
 )
@@ -22,8 +23,8 @@ func main() {
 	}
 
 	app := controllers.NewApplication(
-		database.TopicData(database.Client, "Topics"), 
-		database.PostData(database.Client, "Posts"), 
+		database.TopicData(database.Client, "Topics"),
+		database.PostData(database.Client, "Posts"),
 		database.CommentData(database.Client, "Comments"),
 	)
 
@@ -32,9 +33,9 @@ func main() {
 	e.Use(middleware.Recover())
 
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-        AllowOrigins: []string{"*"},
+		AllowOrigins: []string{"*"},
 		AllowMethods: []string{echo.GET, echo.POST, echo.PUT, echo.DELETE, echo.HEAD},
-    }))
+	}))
 
 	e.Any("/", func(c echo.Context) error {
 		return c.String(200, "Map SNS API is running")
@@ -42,10 +43,10 @@ func main() {
 
 	e.POST("/signup", controllers.SignUp)
 	e.POST("/login", controllers.Login)
-	
+
 	optAuth := e.Group("")
 	optAuth.Use(customMiddleware.OptionalAuthentication)
-	
+
 	// list取得系
 	// 認証の有無で処理分け可能に
 	optAuth.GET("/topics", app.GetTopicList)
@@ -76,10 +77,16 @@ func main() {
 	// コメント操作
 	auth.POST("/posts/:id", app.CreateComment)
 	auth.PUT("/comments/:id", app.EditComment)
-	auth.DELETE("/comments/:id", app.DeleteComment) 
+	auth.DELETE("/comments/:id", app.DeleteComment)
 
 	// ユーザー情報取得
 	auth.GET("/me", app.GetUserData)
+	// サブスクリプション関連
+	auth.POST("/subscriptions/create-session", app.CreateCheckoutSession)
+	// サブスク解約（認証あり）
+	auth.POST("/subscriptions/cancel", app.CancelSubscription)
+	// webhook endpoint (no auth)
+	e.POST("/webhook", app.HandleStripeWebhook)
 
 	log.Fatal(e.Start(":" + port))
 }

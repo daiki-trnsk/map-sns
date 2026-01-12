@@ -18,6 +18,14 @@ type User struct {
 	Created_At    time.Time          `bson:"created_at" json:"created_at"`
 	Updated_At    time.Time          `bson:"updated_at" json:"updated_at"`
 	User_ID       string             `bson:"user_id" json:"user_id"`
+
+	// サブスクリプション情報（追加）
+	IsSubscribed                 bool       `bson:"is_subscribed" json:"is_subscribed"`                                         // サブスク有効フラグ
+	SubscribedAt                 *time.Time `bson:"subscribed_at,omitempty" json:"subscribed_at,omitempty"`                     // サブスク開始日時
+	SubscriptionCurrentPeriodEnd *time.Time `bson:"subscription_period_end,omitempty" json:"subscription_period_end,omitempty"` // 現在の課金期間終了日時
+	SubscriptionStatus           string     `bson:"subscription_status,omitempty" json:"subscription_status,omitempty"`         // active/canceled 等
+	StripeCustomerID             string     `bson:"stripe_customer_id,omitempty" json:"stripe_customer_id,omitempty"`
+	StripeSubscriptionID         string     `bson:"stripe_subscription_id,omitempty" json:"stripe_subscription_id,omitempty"`
 }
 
 type Topic struct {

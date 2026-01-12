@@ -4,7 +4,7 @@ import Footer from "../components/UI/Footer";
 import { AuthContext } from "../context/AuthContext";
 import { API_HOST } from "../common";
 import { getToken } from "../utils/auth";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import send from "../assets/send.png";
 
 export default function TopicCreate() {
@@ -12,7 +12,9 @@ export default function TopicCreate() {
     const [topicTitle, setTopicTitle] = useState("");
     const [description, setDescription] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+    const [autoSubmitting, setAutoSubmitting] = useState(false);
     const navigate = useNavigate();
+    const location = useLocation();
 
     useEffect(() => {
         if (!getToken()) {
@@ -20,6 +22,46 @@ export default function TopicCreate() {
             return;
         }
     });
+
+    // checkout 成功で戻ってきたら sessionStorage の保留トピックを自動送信
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        if (params.get("checkout") === "success") {
+            const pending = sessionStorage.getItem("pending_topic_create");
+            if (pending && !autoSubmitting) {
+                (async () => {
+                    try {
+                        setAutoSubmitting(true);
+                        setIsLoading(true);
+                        const pendingTopic = JSON.parse(pending);
+                        const res = await fetch(`${API_HOST}/topics`, {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                                Authorization: `${getToken()}`,
+                            },
+                            body: JSON.stringify(pendingTopic),
+                        });
+                        if (res.ok) {
+                            sessionStorage.removeItem("pending_topic_create");
+                            const data = await res.json();
+                            setTopicTitle("");
+                            setDescription("");
+                            navigate("/");
+                        } else {
+                            // 再試行はユーザー操作に任せる（保存は残す）
+                            console.error("自動投稿に失敗しました", res.status);
+                        }
+                    } catch (err) {
+                        console.error("自動投稿エラー:", err);
+                    } finally {
+                        setIsLoading(false);
+                        setAutoSubmitting(false);
+                    }
+                })();
+            }
+        }
+    }, [location.search, navigate, autoSubmitting]);
 
     const handleSubmit = async (e: { preventDefault: () => void }) => {
         e.preventDefault();
@@ -46,22 +88,45 @@ export default function TopicCreate() {
                 body: JSON.stringify(newTopic),
             });
 
-            if (!res.ok) {
-                throw new Error("トピックの追加に失敗しました");
-            }
+            if (res.status === 402) {
+                // サーバーが課金を要求したら Checkout セッション作成してリダイレクト
+                // 保留データを保存（checkout 後に自動再送）
+                sessionStorage.setItem("pending_topic_create", JSON.stringify(newTopic));
+                 const sres = await fetch(`${API_HOST}/subscriptions/create-session`, {
+                     method: "POST",
+                     headers: {
+                         Authorization: `${getToken()}`,
+                         "Content-Type": "application/json",
+                     },
+                 });
+                 if (sres.ok) {
+                     const data = await sres.json();
+                     window.location.href = data.url; // Stripe checkout にリダイレクト
+                     return;
+                 } else {
+                    alert("サブスクセッションの作成に失敗しました");
+                     return;
+                 }
+             }
 
-            const data = await res.json();
-            // setTopics((prevTopics) => [...prevTopics, data]);
-            setTopicTitle("");
-            setDescription("");
-            navigate("/");
-        } catch (error) {
-            console.error("エラー:", error);
-            alert("トピックの追加に失敗しました");
-        } finally {
-            setIsLoading(false);
-        }
-    };
+             if (!res.ok) {
+                 throw new Error("トピックの追加に失敗しました");
+             }
+
+             const data = await res.json();
+            // 正常登録なら保留を削除
+            sessionStorage.removeItem("pending_topic_create");
+             // setTopics((prevTopics) => [...prevTopics, data]);
+             setTopicTitle("");
+             setDescription("");
+             navigate("/");
+         } catch (error) {
+             console.error("エラー:", error);
+             alert("トピックの追加に失敗しました");
+         } finally {
+             setIsLoading(false);
+         }
+     };
 
     return (
         <>

@@ -94,16 +94,43 @@ func (app *Application) CreateTopic(c echo.Context) error {
 
 	var topic models.Topic
 	if err := c.Bind(&topic); err != nil {
-		return errorResponse(c, http.StatusBadRequest, "Invalid request payload")
+		return errorResponse(c, http.StatusBadRequest, "invalid request payload")
 	}
-	topic.ID = primitive.NewObjectID()
-	topic.Created_At = time.Now()
-	topic.UserID = c.Get("uid").(string)
-	_, err := app.topicCollection.InsertOne(ctx, topic)
+
+	// 認証ミドルウェア下で呼ばれる想定なので uid を利用
+	userID, ok := c.Get("uid").(string)
+	if !ok || userID == "" {
+		return errorResponse(c, http.StatusBadRequest, "user_id required")
+	}
+
+	// ユーザーの既存Topic数をカウント
+	count, err := app.topicCollection.CountDocuments(ctx, bson.M{"user_id": userID})
 	if err != nil {
-		log.Println("Error inserting topic:", err)
-		return errorResponse(c, http.StatusInternalServerError, "Failed to create topic")
+		return errorResponse(c, http.StatusInternalServerError, "failed to count topics")
 	}
+
+	// 4件以上はサブスク要件をチェック
+	if count >= 4 {
+		var user models.User
+		// controllers パッケージの UserCollection を利用
+		err := UserCollection.FindOne(ctx, bson.M{"user_id": userID}).Decode(&user)
+		// ユーザー未取得 or サブスク未加入なら作成拒否（HTTP 402: Payment Required）
+		if err != nil || !user.IsSubscribed {
+			return c.JSON(http.StatusPaymentRequired, map[string]string{"error": "free topic limit reached (4). subscribe to create more."})
+		}
+	}
+
+	// 続けてTopic作成処理（既存ロジックへ）
+	topic.ID = primitive.NewObjectID()
+	topic.UserID = userID
+	topic.Created_At = time.Now()
+	topic.Updated_At = time.Now()
+
+	if _, err := app.topicCollection.InsertOne(ctx, topic); err != nil {
+		log.Println("failed to create topic:", err)
+		return errorResponse(c, http.StatusInternalServerError, "failed to create topic")
+	}
+
 	return c.JSON(http.StatusCreated, topic)
 }
 

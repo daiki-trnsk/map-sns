@@ -26,6 +26,7 @@ export default function UserInfo({ userData }: { userData: UserData }) {
         description: string;
     } | null>(null);
     const [selectedList, setSelectedList] = useState("mine");
+    const [isCancelling, setIsCancelling] = useState(false);
 
     useEffect(() => {
         if (userData.topics) {
@@ -40,6 +41,8 @@ export default function UserInfo({ userData }: { userData: UserData }) {
         return <p></p>;
     }
     const user = userData.user;
+    const isSubscribed = (user as any).is_subscribed === true || (user as any).subscription_status === "active";
+    const planLabel = isSubscribed ? "プレミアム" : "ベーシック";
 
     const editTopic = async (id: string) => {
         const res = await fetch(`${API_HOST}/topics/${id}`, {
@@ -134,12 +137,43 @@ export default function UserInfo({ userData }: { userData: UserData }) {
         );
     };
 
+    const handleCancelSubscription = async () => {
+        if (!window.confirm("サブスクリプションを解約しますか？")) return;
+        try {
+            setIsCancelling(true);
+            const res = await fetch(`${API_HOST}/subscriptions/cancel`, {
+                method: "POST",
+                headers: {
+                    Authorization: `${getToken()}`,
+                },
+            });
+            if (!res.ok) {
+                alert("解約に失敗しました");
+                return;
+            }
+            alert("解約しました");
+            // ユーザー情報を再取得して表示を更新（簡便のためリロード）
+            window.location.reload();
+        } catch (err) {
+            console.error("cancel err:", err);
+            alert("解約中にエラーが発生しました");
+        } finally {
+            setIsCancelling(false);
+        }
+    };
+
     return (
         <div className="user">
             <div className="user-info">
                 <h1>{user.nickname}</h1>
                 <h3>{user.email}</h3>
-                <button onClick={handleLogout}>Logout</button>
+                <p style={{marginBottom:0}}>プラン: {planLabel}</p>
+                {isSubscribed && (
+                    <button disabled={isCancelling} onClick={handleCancelSubscription} style={{paddingLeft:0}}>
+                        <p style={{margin:0, fontSize:15}}>{isCancelling ? "解約中..." : "解約する"}</p>
+                    </button>
+                )}
+                <div><button onClick={handleLogout} style={{paddingLeft:0}}><h3>Logout</h3></button></div>
             </div>
             <div className="user-topics">
                 <div className="list-selecter">
